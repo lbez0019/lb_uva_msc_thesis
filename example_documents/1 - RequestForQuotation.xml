@@ -1,0 +1,75 @@
+<RequestForQuotation xmlns="urn:oasis:names:specification:ubl:schema:xsd:RequestForQuotation-2"
+    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+    <!--  The following TestInstance process instruction is for customization usage. It indicates
+    that the instance is for testing purposes  -->
+    <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+
+    <cbc:ID>G867B</cbc:ID>
+    <cbc:IssueDate>2008-04-19</cbc:IssueDate>
+    <cbc:IssueTime>11:32:26.0Z</cbc:IssueTime>
+    <cbc:SubmissionDueDate>2008-04-24</cbc:SubmissionDueDate>
+    <cbc:Note>Bestilling af computere</cbc:Note>
+    <cbc:PricingCurrencyCode>DKK</cbc:PricingCurrencyCode>
+
+    <cac:OriginatorCustomerParty>
+        <cac:Party>
+            <cac:PartyName>
+                <cbc:Name>Gentofte Kommune</cbc:Name>
+            </cac:PartyName>
+            <cac:PostalAddress>
+                <cbc:AddressFormatCode listAgencyID="320"
+                    listID="urn:oioubl:codelist:addressformatcode-1.1">StructuredDK</cbc:AddressFormatCode>
+                <cbc:StreetName>Bernstorffsvej</cbc:StreetName>
+                <cbc:BuildingNumber>161</cbc:BuildingNumber>
+                <cbc:CityName>Charlottenlund</cbc:CityName>
+                <cbc:PostalZone>2920</cbc:PostalZone>
+                <cac:Country>
+                    <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:PostalAddress>
+        </cac:Party>
+    </cac:OriginatorCustomerParty>
+
+    <cac:SellerSupplierParty>
+        <cbc:CustomerAssignedAccountID>LEV00123</cbc:CustomerAssignedAccountID>
+        <cac:Party>
+            <cac:PartyName>
+                <cbc:Name>Delcomputer A/S</cbc:Name>
+            </cac:PartyName>
+            <cac:PostalAddress>
+                <cbc:AddressFormatCode listAgencyID="320"
+                    listID="urn:oioubl:codelist:addressformatcode-1.1">StructuredDK</cbc:AddressFormatCode>
+                <cbc:StreetName>Arne Jacobsens Allé</cbc:StreetName>
+                <cbc:BuildingNumber>15</cbc:BuildingNumber>
+                <cbc:CityName>København S</cbc:CityName>
+                <cbc:PostalZone>2300</cbc:PostalZone>
+                <cac:Country>
+                    <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:PostalAddress>
+        </cac:Party>
+    </cac:SellerSupplierParty>
+
+    <cac:Delivery>
+        <cac:RequestedDeliveryPeriod>
+            <cbc:StartDate>2008-05-06</cbc:StartDate>
+            <cbc:StartTime>09:30:47.0Z</cbc:StartTime>
+            <cbc:EndDate>2008-05-10</cbc:EndDate>
+            <cbc:EndTime>09:30:47.0Z</cbc:EndTime>
+        </cac:RequestedDeliveryPeriod>
+    </cac:Delivery>
+
+    <cac:RequestForQuotationLine>
+        <cbc:ID>1</cbc:ID>
+        <cbc:Note>Computer</cbc:Note>
+        <cac:LineItem>
+            <cbc:ID>DELL1052665</cbc:ID>
+            <cbc:Quantity unitCode="NIU">35</cbc:Quantity>
+            <cac:Item>
+                <cbc:Description>Stationær computer</cbc:Description>
+                <cbc:Name>Dell PrecisionTM T3400</cbc:Name>
+            </cac:Item>
+        </cac:LineItem>
+    </cac:RequestForQuotationLine>
+</RequestForQuotation>
