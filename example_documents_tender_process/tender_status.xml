@@ -1,0 +1,52 @@
+<xsd:schema xmlns="urn:oasis:names:specification:ubl:schema:xsd:TenderStatus-2"
+    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+    xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="urn:oasis:names:specification:ubl:schema:xsd:TenderStatus-2"
+    elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.3">
+    <xsd:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+        schemaLocation="../common/UBL-CommonAggregateComponents-2.3.xsd" />
+    <xsd:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+        schemaLocation="../common/UBL-CommonBasicComponents-2.3.xsd" />
+    <xsd:import namespace="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+        schemaLocation="../common/UBL-CommonExtensionComponents-2.3.xsd" />
+    <xsd:element name="TenderStatus" type="TenderStatusType" />
+    <xsd:complexType name="TenderStatusType">
+        <xsd:sequence>
+            <xsd:element ref="ext:UBLExtensions" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:UBLVersionID" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:CustomizationID" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:ProfileID" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:ProfileExecutionID" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:ID" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:CopyIndicator" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:UUID" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:ContractFolderID" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:IssueDate" minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="cbc:IssueTime" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cbc:ContractName" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element ref="cbc:Note" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element ref="cbc:ProcedureCode" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cac:TenderSubmissionDeadlinePeriod" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cac:InvitationSubmissionPeriod" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cac:ParticipationRequestReceptionPeriod" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cac:ProcurementLegislationDocumentReference" minOccurs="0"
+                maxOccurs="1" />
+            <xsd:element ref="cac:FiscalLegislationDocumentReference" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cac:EnvironmentalLegislationDocumentReference" minOccurs="0"
+                maxOccurs="1" />
+            <xsd:element ref="cac:EmploymentLegislationDocumentReference" minOccurs="0"
+                maxOccurs="1" />
+            <xsd:element ref="cac:TenderStatusInquiryDocumentReference" minOccurs="0"
+                maxOccurs="unbounded" />
+            <xsd:element ref="cac:Signature" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element ref="cac:ContractingParty" minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="cac:EconomicOperatorParty" minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="cac:DocumentProviderParty" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cac:TenderRecipientParty" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cac:ProcurementProject" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="cac:ProcurementProjectLot" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

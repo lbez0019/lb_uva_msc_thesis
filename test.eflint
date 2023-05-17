@@ -1,0 +1,117 @@
+Fact accountingcost Identified by String.
+Fact additionalstreetname Identified by String.
+Fact allowancechargereason Identified by String.
+Fact allowancetotalamount Identified by Int.
+Fact amount Identified by String.
+Fact baseamount Identified by String.
+Fact basequantity Identified by Int.
+Fact buildingnumber Identified by Int.
+Fact chargeindicator Identified by String.
+Fact chargetotalamount Identified by Int.
+Fact cityname Identified by String.
+Fact companyid Identified by String.
+Fact countrysubentity Identified by String.
+Fact countrysubentitycode Identified by String.
+Fact deliveryinstructions Identified by String.
+Fact department Identified by String.
+Fact description Identified by String.
+Fact documentcurrencycode Identified by String.
+Fact electronicmail Identified by String.
+Fact enddate Identified by String.
+Fact endpointid Identified by Int.
+Fact familyname Identified by String.
+Fact firstname Identified by String.
+Fact grossweightmeasure Identified by Int.
+Fact id Identified by Int.
+Fact id Identified by String.
+Fact identificationcode Identified by String.
+Fact invoicedquantity Identified by String.
+Fact invoicetypecode Identified by Int.
+Fact issuedate Identified by String.
+Fact itemclassificationcode Identified by Int.
+Fact jobtitle Identified by String.
+Fact lineextensionamount Identified by String.
+Fact lineid Identified by Int.
+Fact middlename Identified by String.
+Fact multiplierfactornumeric Identified by String.
+Fact name Identified by String.
+Fact note Identified by String.
+Fact payableamount Identified by Int.
+Fact payableroundingamount Identified by String.
+Fact paymentchannelcode Identified by String.
+Fact paymentduedate Identified by String.
+Fact paymentid Identified by String.
+Fact paymentmeanscode Identified by Int.
+Fact percent Identified by Int.
+Fact postalzone Identified by Int.
+Fact postbox Identified by Int.
+Fact prepaidamount Identified by Int.
+Fact priceamount Identified by String.
+Fact registrationname Identified by String.
+Fact specialinstructions Identified by Int.
+Fact startdate Identified by String.
+Fact streetname Identified by String.
+Fact taxableamount Identified by String.
+Fact taxamount Identified by String.
+Fact taxexclusiveamount Identified by String.
+Fact taxexemptionreason Identified by String.
+Fact taxexemptionreasoncode Identified by String.
+Fact taxinclusiveamount Identified by Int.
+Fact taxpointdate Identified by String.
+Fact telefax Identified by Int.
+Fact telephone Identified by Int.
+Fact totaltransporthandlingunitquantity Identified by Int.
+Fact ublversionid Identified by String.
+Fact value Identified by String.
+Fact accountingcustomerparty_party Identified by  endpointid .
+Fact accountingcustomerparty_party_contact Identified by  electronicmail * telefax * telephone .
+Fact accountingcustomerparty_party_partyidentification Identified by  id .
+Fact accountingcustomerparty_party_partylegalentity Identified by  companyid * registrationname .
+Fact accountingcustomerparty_party_partylegalentity_registrationaddress Identified by  cityname * countrysubentity .
+Fact accountingcustomerparty_party_partylegalentity_registrationaddress_country Identified by  identificationcode .
+Fact accountingcustomerparty_party_partyname Identified by  name .
+Fact accountingcustomerparty_party_partytaxscheme Identified by  companyid .
+Fact accountingcustomerparty_party_partytaxscheme_taxscheme Identified by  id .
+Fact accountingcustomerparty_party_person Identified by  familyname * firstname * jobtitle * middlename .
+Fact accountingcustomerparty_party_postaladdress Identified by  additionalstreetname * buildingnumber * cityname * countrysubentity * department * id * postalzone * postbox * streetname .
+Fact accountingcustomerparty_party_postaladdress_country Identified by  identificationcode .
+Fact accountingsupplierparty_party Identified by  endpointid .
+Fact accountingsupplierparty_party_contact Identified by  electronicmail * telefax * telephone .
+Fact accountingsupplierparty_party_partyidentification Identified by  id .
+Fact accountingsupplierparty_party_partylegalentity Identified by  companyid * registrationname .
+Fact accountingsupplierparty_party_partylegalentity_registrationaddress Identified by  cityname * countrysubentity .
+Fact accountingsupplierparty_party_partylegalentity_registrationaddress_country Identified by  identificationcode .
+Fact accountingsupplierparty_party_partyname Identified by  name .
+Fact accountingsupplierparty_party_partytaxscheme Identified by  companyid .
+Fact accountingsupplierparty_party_partytaxscheme_taxscheme Identified by  id .
+Fact accountingsupplierparty_party_person Identified by  familyname * firstname * jobtitle * middlename .
+Fact accountingsupplierparty_party_postaladdress Identified by  additionalstreetname * buildingnumber * cityname * countrysubentitycode * department * id * postalzone * postbox * streetname .
+Fact accountingsupplierparty_party_postaladdress_country Identified by  identificationcode .
+Fact allowancecharge Identified by  allowancechargereason * amount * chargeindicator .
+Fact invoiceline Identified by  accountingcost * id * invoicedquantity * lineextensionamount * note .
+Fact invoiceline_allowancecharge Identified by  allowancechargereason * amount * chargeindicator .
+Fact invoiceline_item Identified by  description * name .
+Fact invoiceline_item_additionalitemproperty Identified by  name * value .
+Fact invoiceline_item_classifiedtaxcategory Identified by  id * id * percent .
+Fact invoiceline_item_commodityclassification Identified by  itemclassificationcode .
+Fact invoiceline_item_sellersitemidentification Identified by  id .
+Fact invoiceline_item_standarditemidentification Identified by  id .
+Fact invoiceline_orderlinereference Identified by  lineid .
+Fact invoiceline_price Identified by  basequantity * priceamount .
+Fact invoiceline_price_allowancecharge Identified by  allowancechargereason * amount * baseamount * chargeindicator * multiplierfactornumeric .
+Fact invoiceline_taxtotal Identified by  taxamount .
+Fact invoiceperiod Identified by  enddate * startdate .
+Fact legalmonetarytotal Identified by  allowancetotalamount * chargetotalamount * lineextensionamount * payableamount * payableroundingamount * prepaidamount * taxexclusiveamount * taxinclusiveamount .
+Fact payeeparty_partyidentification Identified by  id .
+Fact payeeparty_partylegalentity Identified by  companyid .
+Fact payeeparty_partyname Identified by  name .
+Fact paymentmeans Identified by  paymentchannelcode * paymentduedate * paymentid * paymentmeanscode .
+Fact paymentmeans_payeefinancialaccount Identified by  id .
+Fact paymentmeans_payeefinancialaccount_financialinstitutionbranch_financialinstitution Identified by  id .
+Fact paymentterms Identified by  note .
+Fact shipment Identified by  deliveryinstructions * grossweightmeasure * id * specialinstructions * totaltransporthandlingunitquantity .
+Fact shipment_consignment Identified by  id .
+Fact taxtotal Identified by  taxamount .
+Fact taxtotal_taxsubtotal Identified by  taxableamount * taxamount .
+Fact taxtotal_taxsubtotal_taxcategory Identified by  id * percent * taxexemptionreason * taxexemptionreasoncode .
+Fact taxtotal_taxsubtotal_taxcategory_taxscheme Identified by  id .

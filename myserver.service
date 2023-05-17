@@ -1,0 +1,14 @@
+
+    [Unit]
+    Description=My Java Server
+    After=network.target
+
+    [Service]
+    Type=simple
+    User=username
+    ExecStart=/usr/bin/wsl bash -c 'cd /mnt/c/Project/server/web-server && mvn exec:java -Dexec.mainClass="eflint.Main"'
+    Restart=always
+
+    [Install]
+    WantedBy=multi-user.target
+    
