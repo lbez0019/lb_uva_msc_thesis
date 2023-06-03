@@ -5,14 +5,15 @@
     <cbc:ID>TOSL108</cbc:ID>
     <cbc:IssueDate>2009-12-15</cbc:IssueDate>
     <cbc:InvoiceTypeCode listID="UN/ECE 1001 Subset" listAgencyID="6">380</cbc:InvoiceTypeCode>
-    <cbc:Note languageID="en">Ordered in our booth at the convention.</cbc:Note>
+    <cbc:Note languageID="en">Ordered at Test Booth.</cbc:Note>
     <cbc:TaxPointDate>2009-11-30</cbc:TaxPointDate>
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyID="6">EUR</cbc:DocumentCurrencyCode>
     <cbc:AccountingCost>Project cost code 123</cbc:AccountingCost>
     <cac:InvoicePeriod>
-        <cbc:StartDate>2009-11-01</cbc:StartDate>
-        <cbc:EndDate>2009-11-30</cbc:EndDate>
+        <cbc:StartDate>2022-11-01</cbc:StartDate>
+        <cbc:EndDate>2022-11-30</cbc:EndDate>
     </cac:InvoicePeriod>
+
     <cac:Shipment>
         <cbc:ID>S123</cbc:ID>
         <cbc:GrossWeightMeasure unitCode="KGM">12</cbc:GrossWeightMeasure>
@@ -23,6 +24,7 @@
             <cbc:ID>C123</cbc:ID>
         </cac:Consignment>
     </cac:Shipment>
+
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cbc:EndpointID schemeID="GLN" schemeAgencyID="9">1234567890123</cbc:EndpointID>
@@ -129,6 +131,7 @@
             </cac:Person>
         </cac:Party>
     </cac:AccountingCustomerParty>
+
     <cac:PayeeParty>
         <cac:PartyIdentification>
             <cbc:ID schemeID="GLN" schemeAgencyID="9">098740918237</cbc:ID>
@@ -157,6 +160,7 @@
     <cac:PaymentTerms>
         <cbc:Note>Penalty percentage 10% from due date</cbc:Note>
     </cac:PaymentTerms>
+
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReason>Packing cost</cbc:AllowanceChargeReason>
@@ -167,6 +171,7 @@
         <cbc:AllowanceChargeReason>Promotion discount</cbc:AllowanceChargeReason>
         <cbc:Amount currencyID="EUR">100.00</cbc:Amount>
     </cac:AllowanceCharge>
+
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="EUR">292.20</cbc:TaxAmount>
         <cac:TaxSubtotal>
@@ -209,6 +214,7 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
     </cac:TaxTotal>
+
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="EUR">1436.5</cbc:LineExtensionAmount>
         <cbc:TaxExclusiveAmount currencyID="EUR">1436.5</cbc:TaxExclusiveAmount>
@@ -219,6 +225,7 @@
         <cbc:PayableRoundingAmount currencyID="EUR">0.30</cbc:PayableRoundingAmount>
         <cbc:PayableAmount currencyID="EUR">729</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
+
     <cac:InvoiceLine>
         <cbc:ID>I1</cbc:ID>
         <cbc:Note>Scratch on box</cbc:Note>

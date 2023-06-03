@@ -1,0 +1,18 @@
+<AwardedNotification xmlns="urn:oasis:names:specification:ubl:schema:xsd:AwardedNotification-2"
+    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+    <cbc:ID>1</cbc:ID>
+    <cbc:ContractFolderID>C-001</cbc:ContractFolderID>
+    <cbc:IssueDate>2023-04-02</cbc:IssueDate>
+    <cbc:ContractName>UVA Thesis Work</cbc:ContractName>
+    <cac:SenderParty>
+        <cbc:WebsiteURI>https://www.test-contracting-authority.org</cbc:WebsiteURI>
+    </cac:SenderParty>
+    <cac:ReceiverParty>
+        <cbc:WebsiteURI>https://www.test-candidate-tenderer.org</cbc:WebsiteURI>
+    </cac:ReceiverParty>
+    <cac:TenderResult>
+        <cbc:AwardDate>2023-04-02</cbc:AwardDate>
+    </cac:TenderResult>
+
+</AwardedNotification>

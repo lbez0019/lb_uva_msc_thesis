@@ -14,9 +14,7 @@
         <cbc:WebsiteURI>https://lukebezzina.com</cbc:WebsiteURI>
     </cac:TendererParty>
     <cac:ContractingParty>
-        <cbc:BuyerProfileURI>
-            https://www.unido.org/get-involved-procurement/procurement-opportunities
-        </cbc:BuyerProfileURI>
+        <cbc:BuyerProfileURI>https://www.unido.org/get-involved-procurement/procurement-opportunities</cbc:BuyerProfileURI>
         <cac:Party>
             <cbc:WebsiteURI>https://www.unido.org</cbc:WebsiteURI>
         </cac:Party>
