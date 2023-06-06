@@ -1,0 +1,22 @@
+<ContractAwardNotice xmlns="urn:oasis:names:specification:ubl:schema:xsd:ContractAwardNotice-2"
+    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+    <cbc:ID>CA-001</cbc:ID>
+    <cbc:ContractFolderID>C-001</cbc:ContractFolderID>
+    <cbc:IssueDate>2023-04-03</cbc:IssueDate>
+    <cac:Signature>
+        <cbc:ID>0040623M</cbc:ID>
+    </cac:Signature>
+    <cac:ContractingParty>
+        <cbc:BuyerProfileURI>https://www.unido.org/get-involved-procurement/procurement-opportunities</cbc:BuyerProfileURI>
+        <cac:Party>
+            <cbc:WebsiteURI>https://www.unido.org</cbc:WebsiteURI>
+        </cac:Party>
+    </cac:ContractingParty>
+    <cac:TenderResult>
+        <cbc:AwardDate>2023-04-02</cbc:AwardDate>
+    </cac:TenderResult>
+    <!-- <cac:OriginatorCustomerParty></cac:OriginatorCustomerParty> -->
+    <!-- <cac:ReceiverParty></cac:ReceiverParty> -->
+
+</ContractAwardNotice>
