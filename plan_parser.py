@@ -4,6 +4,7 @@ import os
 import requests
 import time
 import traceback
+from act_parser import Executor
 
 
 class UBLHandler(xml.sax.ContentHandler):
@@ -32,7 +33,6 @@ class UBLHandler(xml.sax.ContentHandler):
         if self.document_name == "":
             self.document_name = self.current_element.lower()
             self.fact_values["documents_added"] = [[["documents_added", self.document_name]]]
-
 
         # Aggregate (composite) component parsed
         elif self.current_element.startswith("cac") and self.current_element not in self.parsed_aggregate_components:
@@ -89,6 +89,7 @@ class UBLHandler(xml.sax.ContentHandler):
                 # self.fact_values.append(f'+{fact_name}({fact_value}).')
                 self.fact_values[fact_name] = [[[fact_name, fact_value]]]
 
+
 def write_eflint_template(fact_types):
     with open('../../eflint-server/web-server/test.eflint', 'w') as f:
         for fact_type in fact_types:
@@ -114,14 +115,14 @@ def web_server_check():
 def define_fact_payload(value_count, uuid, fact, fact_values):
     if value_count == 1:
         return f'{{ "uuid": "{uuid}", "request-type": "command", "data":	{{ "command": "create", "value": {{' \
-                  f'"fact-type" : "{fact}", "value" : {fact_values[0][1]} }} }} }}'
+               f'"fact-type" : "{fact}", "value" : {fact_values[0][1]} }} }} }}'
     else:
         sub_values = ""
         for item in fact_values:
             sub_values += f'{{ "fact-type" : "{item[0]}", "value" : {item[1]} }},'
         sub_values = sub_values[:-1]
         return f'{{ "uuid": "{uuid}", "request-type": "command", "data":	{{ "command": "create", "value": {{' \
-                  f'"fact-type" : "{fact}", "value" : [{sub_values}] }} }} }}'
+               f'"fact-type" : "{fact}", "value" : [{sub_values}] }} }} }}'
 
 
 def create_fact(fact, values, uuid):
@@ -178,7 +179,7 @@ def eflint_communicate(eflint_facts, eflint_fact_values):
     # Run eflint server in the background
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    #write_eflint_template(eflint_facts)
+    # write_eflint_template(eflint_facts)
     web_server_status = web_server_check()
     instance_created = create_instance()
 
@@ -190,8 +191,40 @@ def eflint_communicate(eflint_facts, eflint_fact_values):
     else:
         print("Instance not created! Facts were not added to environment.")
 
+    enabled_transitions = check_enabled_transitions(instance_created)
+    all_transitions = retrieve_all_transitions()
+
     command = ['wsl', 'bash', '-c', 'kill $(lsof -t -i:8080)']
     subprocess.run(command, capture_output=True)
+
+
+def retrieve_all_transitions():
+    executor = Executor()
+    action_list = executor.retrieve_action_list()
+    # scenarios = executor.retrieve_scenarios(action_list)
+
+    return action_list
+
+
+def check_enabled_transitions(instance):
+    enabled_transitions = set()
+
+    url = 'http://localhost:8080/command'
+    myobj = {
+        "uuid": instance["data"]["uuid"],
+        "request-type": "command",
+        "data":
+            {
+                "command": "status"
+            }
+    }
+
+    transitions = requests.post(url, json=myobj).json()["data"]["response"]["all-enabled-transitions"]
+
+    for transition in transitions:
+        enabled_transitions.add(transition["fact-type"])
+
+    return enabled_transitions
 
 
 def try_parse(file):
@@ -230,6 +263,7 @@ def update_with_merge(current_dict, new_dict):
             current_dict[key] = value
     return current_dict
 
+
 def composite_fact_creation(document_handler, composite_facts, composite_fact_values):
     for fact in document_handler.composite_components:
         parsed_fact = fact.lower()
@@ -267,3 +301,6 @@ eflint_communicate(facts, fact_values)
 # # Check if value is a decimal value (negative, positive) or not
 # def is_digit(n: str) -> bool:
 #     return n.replace('.', '', 1).isdigit()
+
+
+# scenarios = executor.retrieve_scenarios(action_list)

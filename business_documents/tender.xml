@@ -23,7 +23,7 @@
         </cac:ContractingActivity> -->
     </cac:ContractingParty>
     <cac:TenderedProject>
-        <cbc:FeeAmount currencyID="EUR">500.00</cbc:FeeAmount>
+        <cbc:FeeAmount currencyID="EUR">500</cbc:FeeAmount>
     </cac:TenderedProject>
 </Tender>
 

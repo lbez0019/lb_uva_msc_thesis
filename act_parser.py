@@ -1,32 +1,12 @@
 import re
 import itertools
-from collections import defaultdict
-from pyparsing import infixNotation, opAssoc, Literal, Word, alphas, Forward
-from pyparsing import Keyword, nums, alphanums, Group, Suppress
+import networkx as nx
+import matplotlib.pyplot as plt
 
-class ActionParser():
+
+class ActionParser:
     def __init__(self):
         self.operands = set()
-
-        AND = Literal("&&")
-        OR = Literal("||")
-        NOT = Keyword("Not", caseless=True) | Literal("!")
-
-        operand = Word(alphas, alphanums+"_")
-        integer = Word(nums).setParseAction(lambda t: int(t[0]))
-        comparison_op = Literal("==") | Literal("!=") | Literal("<=") | Literal(">=") | Literal("<") | Literal(">")
-        comparison_expr = operand + comparison_op + (integer | operand)
-        self.expr = Forward()
-
-        function_call = Group(operand + Suppress("(") + Suppress(")"))  # Updated function call pattern
-        atom = comparison_expr | function_call | operand
-        self.expr <<= infixNotation(atom,
-            [
-                (NOT, 1, opAssoc.RIGHT),
-                (AND, 2, opAssoc.LEFT),
-                (OR, 2, opAssoc.LEFT)
-            ]
-        )
 
     def parse_string(self, input_string):
         lines = input_string.split("\n")
@@ -42,12 +22,14 @@ class ActionParser():
                         value = line[len(key) + 1:].strip()
 
                         if key == 'Holds when' or key == 'Conditioned by':
-                            value = self.expr.parseString(value).as_list()
+                            value = self.infix_to_rpn(value)
+                            result[key].append(value)
+                            # value = self.expr.parseString(value).as_list()
                         else:
                             value = re.split(r"&&(?![^()]*\))", value)
                             value = [element.strip() for element in value]
+                            result[key].extend(value)
 
-                        result[key].extend(value)
                         current_key = key
                         break
                 else:
@@ -55,100 +37,235 @@ class ActionParser():
 
         return result
 
+    # Shunting Yard implementation
+    @staticmethod
+    def infix_to_rpn(expression):
+        precedence = {'Not': 3, '&&': 2, '||': 1}
+        output = []
+        operators = []
+        tokens = expression.split()
+
+        ignore_next = False  # Flag to ignore the next value
+
+        for token in tokens:
+            if token in precedence:
+                while operators and operators[-1] != '(' and precedence[token] <= precedence.get(operators[-1], 0):
+                    output.append(operators.pop())
+                operators.append(token)
+            elif token == '(':
+                operators.append(token)
+            elif token == ')':
+                while operators and operators[-1] != '(':
+                    output.append(operators.pop())
+                operators.pop()  # Discard the '('#
+            elif token in ['==', '!=', '<', '>', '<=', '>=']:
+                ignore_next = True  # Set the flag to ignore the next value
+            else:
+                if not ignore_next:
+                    output.append(token)
+                ignore_next = False
+
+        while operators:
+            output.append(operators.pop())
+
+        return ' '.join(output)
+
+    @staticmethod
+    def rpn_to_infix(rpn_expression):
+        stack = []
+        operators = {'Not', '&&', '||', '==', '!=', '<', '>', '<=', '>='}
+
+        for token in rpn_expression.split():
+            if token in operators:
+                if token == 'Not':
+                    operand = stack.pop()
+                    infix = f"({token} {operand})"
+                    stack.append(infix)
+                else:
+                    right_operand = stack.pop()
+                    left_operand = stack.pop()
+                    infix = f"({left_operand} {token} {right_operand})"
+                    stack.append(infix)
+            else:
+                stack.append(token)
+
+        return stack.pop()
+
+    @staticmethod
+    def calculate_permutations(operands):
+        permutations = list(itertools.product([True, False], repeat=len(operands)))
+        return permutations
+
+    # Function to count the number of operands in the parsed expression
+    def count_operand_instances(self, parser, expression):
+        if isinstance(expression, int) or expression in ['&&', '||', '!', '==', 'Not']:
+            return 0
+
+        if isinstance(expression, str):
+            parser.operands.add(expression)
+            return 1
+
+        count = 0
+        for item in expression:
+            count += self.count_operand_instances(parser, item)
+        return count
 
 
+class DAGBuilder:
+    @staticmethod
+    def is_operator(token):
+        return token in ['&&', '||', 'Not']
 
-def calculate_permutations(operands):
-    permutations = list(itertools.product([True, False], repeat=len(operands)))
-    return permutations
+    def rpn_to_expression_tree(self, rpn_expression):
+        stack = []
+        tokens = rpn_expression.split()
+
+        for token in tokens:
+            if self.is_operator(token):
+                if token == 'Not':
+                    operand = stack.pop()
+                    stack.append((token, operand))
+                else:
+                    right_operand = stack.pop()
+                    left_operand = stack.pop()
+                    stack.append((token, left_operand, right_operand))
+            else:
+                stack.append(token)
+
+        return stack.pop()
+
+    def build_dependency_graph(self, items):
+        graph = nx.DiGraph()
+
+        for item, conditions in items.items():
+            holds_when = conditions['Holds when']
+            creates = conditions['Creates']
+
+            for condition in holds_when:
+                expression_tree = self.rpn_to_expression_tree(condition)
+                self.add_edges_to_graph(graph, expression_tree, creates, item)
+
+        return graph
+
+    @staticmethod
+    def add_edges_to_graph(graph, expression_tree, creates, action_node):
+        def add_edges(node, prev_node):
+            if isinstance(node, tuple):
+                operator = node[0]
+                for operand in node[1:]:
+                    add_edges(operand, prev_node)
+            else:
+                for created_item in creates:
+                    graph.add_edge(node, created_item, action=action_node)  # Set action_node as attribute of edge
+
+        add_edges(expression_tree, action_node)
+
+    @staticmethod
+    def get_action_from_edge(graph, node, successor):
+        for edge in graph.edges():
+            if edge[0] == node and edge[1] == successor:
+                return graph.edges[node, successor]["action"]
+
+    def visualise_graph(self, items):
+        dependency_graph = self.build_dependency_graph(items)
+        pos = nx.shell_layout(dependency_graph)
+
+        edge_labels = {}
+        for u, v, attrs in dependency_graph.edges(data=True):
+            if "action" in attrs:
+                edge_labels[(u, v)] = attrs["action"]
+
+        plt.figure(figsize=(12, 12))
+
+        nx.draw_networkx(dependency_graph, pos, with_labels=True, node_color='lightblue', node_size=1200, font_size=12,
+                         arrowsize=30, edge_color='gray')
+        nx.draw_networkx_edge_labels(dependency_graph, pos=pos, edge_labels=edge_labels, font_size=9)
+
+        plt.title("Directed Graph Visualization")
+        plt.axis("off")
+        plt.show()
+
+        return dependency_graph
+
+    def topological_sort(self, dependency_graph):
+        # Perform topological sorting to generate valid scenarios
+        scenarios = []
+
+        # Find all nodes without incoming edges (sources)
+        sources = [node for node in dependency_graph.nodes if dependency_graph.in_degree(node) == 0]
+
+        # Generate scenarios starting from each source node
+        for source in sources:
+            stack = [(source, [source])]
+            action_stack = []
+
+            while stack:
+                action_path = []
+                if action_stack:
+                    init_act, action_path = action_stack.pop()
+                node, path = stack.pop()
+
+                successors = list(dependency_graph.successors(node))
+
+                if successors:
+                    for successor in successors:
+                        action = self.get_action_from_edge(dependency_graph, node, successor)
+
+                        new_action_path = action_path + [action]
+                        new_path = path + [successor]
+                        action_stack.append((action, new_action_path))
+                        stack.append((successor, new_path))
+                else:
+                    scenarios.append(action_path)
+
+        return scenarios
 
 
-# Function to count the number of operands in the parsed expression
-def count_operand_instances(action_parser, expression):
-    if isinstance(expression, int) or expression in ['&&', '||', '!', '==', 'Not']:
-        return 0
+class Executor:
 
-    if isinstance(expression, str):
-        action_parser.operands.add(expression)
-        return 1
+    def parse_file(self, file_path):
+        with open(file_path, 'r') as file:
+            content = file.read()
 
-    count = 0
-    for item in expression:
-        count += count_operand_instances(action_parser, item)
-    return count
+        pattern = r'(Act [\w\W]*?\.)'
+        acts = re.findall(pattern, content, re.DOTALL)
 
-def parse_file(file_path):
-    with open(file_path, 'r') as file:
-        content = file.read()
+        return acts
 
-    pattern = r'(Act [\w\W]*?\.)'
-    acts = re.findall(pattern, content, re.DOTALL)
+    def trim_values_end(self, values):
+        for i in range(len(values)):
+            if values[i].endswith('.'):
+                values[i] = values[i].rstrip('.')
+        return values
 
-    return acts
+    def retrieve_action_list(self):
+        template_path = '../../eflint-server/web-server/test.eflint'  # Replace with the actual file path
+        parsed_acts = self.parse_file(template_path)
+        action_list = []
+        action_parser = ActionParser()
 
+        for act in parsed_acts:
+            action = action_parser.parse_string(act)
+            action_list.append(action)
+            preconditions = action['Holds when'] + action['Conditioned by']
 
-template_path = '../../eflint-server/web-server/test.eflint'  # Replace with the actual file path
-parsed_acts = parse_file(template_path)
-action_list = []
-action_parser = ActionParser()
+        return action_list
 
-logic_expression_string = "Not(administrator()) || candidate == 5 && test_fact"
-parsed_expression = action_parser.expr.parseString(logic_expression_string)
+    def retrieve_scenarios(self, action_list):
+        items = {}
+        for dict_item in action_list:
+            act = dict_item['Act'][0]
+            holds_when = dict_item['Holds when']
+            creates = dict_item['Creates']
+            creates = self.trim_values_end(creates)
+            items[act] = {'Holds when': holds_when, 'Creates': creates}
 
-for act in parsed_acts:
-    action = action_parser.parse_string(act)
-    action_list.append(action)
+        dag_builder = DAGBuilder()
+        dependency_graph = dag_builder.visualise_graph(items)
+        scenarios = dag_builder.topological_sort(dependency_graph)
 
-    for key in action:
-        print(key)
-        print(action[key])
-        print("----")
+        return scenarios
 
-    preconditions = action['Holds when'] + action['Conditioned by']
-
-    print(preconditions)
-
-    operand_count = count_operand_instances(action_parser, preconditions)
-    # Replace with your own list
-    permutations = calculate_permutations(action_parser.operands)
-    print(len(permutations))
-    for perm in permutations:
-        print(perm)
-
-print("end")
-# sorted_items = topological_sort(items)
-# print(sorted_items)
-# for item_name in sorted_items:
-#     item = next(item for item in items if item[0] == item_name)
-#     print(item)
-
-
-
-
-# def topological_sort(dependencies):
-#     graph = defaultdict(list)
-#     visited = set()
-#     result = []
-#
-#     # Build the graph
-#     for item in dependencies:
-#         item_name = item["Act"][0]
-#         holds_when = item["Holds when"]
-#         creates = item["Creates"]
-#         graph[item_name].extend(creates)
-#
-#     # Recursive function to perform the depth-first search
-#     def dfs(node):
-#         visited.add(node)
-#         for neighbor in graph[node]:
-#             if neighbor not in visited:
-#                 dfs(neighbor)
-#         result.insert(0, node)
-#
-#     # Perform topological sort for each item in the graph
-#     for item_name in list(graph.keys()):  # Use a copy of keys
-#         print(item_name)
-#         if item_name not in visited:
-#             dfs(item_name)
-#
-#     return result
+    # logic_expression_string = "Not(administrator()) || candidate == candidate2 && test_fact"
+    # logic_expression_string = "Not (administrator()) || ( candidate == candidate2 ) && test_fact"
+    # parsed_expression = action_parser.infix_to_rpn(logic_expression_string)
