@@ -1,17 +1,39 @@
 import re
-import itertools
 import networkx as nx
 import matplotlib.pyplot as plt
 
 
 class ActionParser:
     def __init__(self):
-        self.operands = set()
+        self.actions = {}
+
+    @staticmethod
+    def parse_file(file_path):
+        with open(file_path, 'r') as file:
+            content = file.read()
+
+        pattern = r'(?m)^(?!Extend)(Act [\w\W]*?\.)'
+        acts = re.findall(pattern, content, re.DOTALL)
+
+        return acts
+
+    def retrieve_action_list(self):
+        template_path = '../../eflint-server/web-server/test.eflint'  # Replace with the actual file path
+        parsed_acts = self.parse_file(template_path)
+        action_list = []
+
+        for act in parsed_acts:
+            action = self.parse_string(act)
+            action_list.append(action)
+            self.actions[action["Act"][0]] = action
+            preconditions = action['Conditioned by']
+
+        return action_list
 
     def parse_string(self, input_string):
         lines = input_string.split("\n")
-        result = {'Act': [], 'Actor': [], 'Recipient': [], 'Holds when': [], 'Conditioned by': [], 'Creates': [],
-                  'Terminates': [], 'Obfuscates': []}
+        result = {'Act': [], 'Actor': [], 'Recipient': [], 'Holds when': [],
+                  'Conditioned by': [], 'Creates': [], 'Terminates': [], 'Obfuscates': []}
         current_key = ''
 
         for line in lines:
@@ -21,12 +43,13 @@ class ActionParser:
                     if line.startswith(key + ' '):
                         value = line[len(key) + 1:].strip()
 
-                        if key == 'Holds when' or key == 'Conditioned by':
+                        if key == 'Conditioned by':
                             value = self.infix_to_rpn(value)
                             result[key].append(value)
-                            # value = self.expr.parseString(value).as_list()
+
                         else:
-                            value = re.split(r"&&(?![^()]*\))", value)
+                            pattern = r",(?![^()]*\))" # Only commas not within brackets
+                            value = re.split(pattern, value)
                             value = [element.strip() for element in value]
                             result[key].extend(value)
 
@@ -37,43 +60,41 @@ class ActionParser:
 
         return result
 
-    # Shunting Yard implementation
     @staticmethod
-    def infix_to_rpn(expression):
-        precedence = {'Not': 3, '&&': 2, '||': 1}
-        output = []
-        operators = []
-        tokens = expression.split()
+    def single_bracketed_token(expression):
+        result = ""
+        within_brackets = False
 
-        ignore_next = False  # Flag to ignore the next value
+        for char in expression:
+            if char == '(':
+                within_brackets = True
+            elif char == ')':
+                within_brackets = False
 
-        for token in tokens:
-            if token in precedence:
-                while operators and operators[-1] != '(' and precedence[token] <= precedence.get(operators[-1], 0):
-                    output.append(operators.pop())
-                operators.append(token)
-            elif token == '(':
-                operators.append(token)
-            elif token == ')':
-                while operators and operators[-1] != '(':
-                    output.append(operators.pop())
-                operators.pop()  # Discard the '('#
-            elif token in ['==', '!=', '<', '>', '<=', '>=']:
-                ignore_next = True  # Set the flag to ignore the next value
+            if within_brackets and char == ' ':
+                continue
+
+            result += char
+
+        return result
+
+    @staticmethod
+    def join_output_with_operators(output, equality_operators):
+        result = output[0]
+
+        for i in range(1, len(output)):
+            if output[i] in equality_operators or output[i-1] in equality_operators:
+                result += output[i]
             else:
-                if not ignore_next:
-                    output.append(token)
-                ignore_next = False
+                result += ' ' + output[i]
 
-        while operators:
-            output.append(operators.pop())
+        return result
 
-        return ' '.join(output)
-
-    @staticmethod
-    def rpn_to_infix(rpn_expression):
+    def rpn_to_infix(self, rpn_expression):
         stack = []
         operators = {'Not', '&&', '||', '==', '!=', '<', '>', '<=', '>='}
+
+        rpn_expression = self.single_bracketed_token(rpn_expression)
 
         for token in rpn_expression.split():
             if token in operators:
@@ -91,9 +112,78 @@ class ActionParser:
 
         return stack.pop()
 
+    # Shunting Yard implementation
     @staticmethod
-    def calculate_permutations(operands):
-        permutations = list(itertools.product([True, False], repeat=len(operands)))
+    def infix_to_rpn(expression):
+        precedence = {'Not': 3, '&&': 2, '||': 1}
+        equality_operators = ['==', '!=', '<', '>', '<=', '>=']
+        output = []
+        operators = []
+        tokens = expression.split()
+
+        for i in range(len(tokens)):
+            token = tokens[i]
+            if token in precedence:
+                while operators and operators[-1] != '(' and precedence[token] <= precedence.get(operators[-1], 0):
+                    output.append(operators.pop())
+                operators.append(token)
+            elif token == '(':
+                operators.append(token)
+            elif token == ')':
+                while operators and operators[-1] != '(':
+                    output.append(operators.pop())
+                operators.pop()  # Discard the '('#
+            elif token in equality_operators:
+                # operators.append('(')
+                output.append(token)
+            else:
+                if (i + 1) < len(tokens) and tokens[i + 1] in equality_operators:
+                    token = '(' + token
+                if tokens[i - 1] in equality_operators:
+                    token = token + ')'
+                output.append(token)
+
+        while operators:
+            output.append(operators.pop())
+
+        return ActionParser.join_output_with_operators(output, equality_operators)
+
+    @staticmethod
+    def calculate_permutations(operands, operators):
+        permutations = []
+        for i in range(2 ** len(operands)):
+            binary = bin(i)[2:].zfill(len(operands))
+            operand_permutation = [operands[j] if bit == '0' else 'True' for j, bit in enumerate(binary)]
+            perm_with_ops = ActionParser.interleave(operand_permutation, operators)
+            permutations.append(perm_with_ops)
+
+        return permutations
+
+    @staticmethod
+    def interleave(lst1, lst2):
+        interleaved = []
+        min_len = min(len(lst1), len(lst2))
+        for i in range(min_len):
+            interleaved.append(lst1[i])
+            interleaved.append(lst2[i])
+        if len(lst1) > min_len:
+            interleaved.extend(lst1[min_len:])
+        elif len(lst2) > min_len:
+            interleaved.extend(lst2[min_len:])
+
+        return interleaved
+
+    def derive_alternative_preconditions(self, expression):
+        operators = ['&&', '||']
+        # Split the expression into tokens
+        tokens = expression.split(' ')
+        tokens = [token for token in tokens if token]
+        operands = [token for token in tokens if token not in operators]
+        parsed_operators = [token for token in tokens if token in operators]
+
+        # Generate permutations using the calculate_permutations function
+        permutations = ActionParser.calculate_permutations(operands, parsed_operators)
+
         return permutations
 
     # Function to count the number of operands in the parsed expression
@@ -121,16 +211,16 @@ class DAGBuilder:
         tokens = rpn_expression.split()
 
         for token in tokens:
-            if self.is_operator(token):
-                if token == 'Not':
-                    operand = stack.pop()
-                    stack.append((token, operand))
-                else:
-                    right_operand = stack.pop()
-                    left_operand = stack.pop()
-                    stack.append((token, left_operand, right_operand))
-            else:
-                stack.append(token)
+            # if self.is_operator(token):
+            #     if token == 'Not':
+            #         operand = stack.pop()
+            #         stack.append((token, operand))
+            #     else:
+            #         right_operand = stack.pop()
+            #         left_operand = stack.pop()
+            #         stack.append((token, left_operand, right_operand))
+            # else:
+            stack.append(token)
 
         return stack.pop()
 
@@ -138,25 +228,24 @@ class DAGBuilder:
         graph = nx.DiGraph()
 
         for item, conditions in items.items():
-            holds_when = conditions['Holds when']
+            act = conditions['Act']
             creates = conditions['Creates']
 
-            for condition in holds_when:
-                expression_tree = self.rpn_to_expression_tree(condition)
-                self.add_edges_to_graph(graph, expression_tree, creates, item)
+            expression_tree = self.rpn_to_expression_tree(act)
+            self.add_edges_to_graph(graph, expression_tree, creates, item)
 
         return graph
 
     @staticmethod
     def add_edges_to_graph(graph, expression_tree, creates, action_node):
         def add_edges(node, prev_node):
-            if isinstance(node, tuple):
-                operator = node[0]
-                for operand in node[1:]:
-                    add_edges(operand, prev_node)
-            else:
-                for created_item in creates:
-                    graph.add_edge(node, created_item, action=action_node)  # Set action_node as attribute of edge
+            # if isinstance(node, tuple):
+            #     operator = node[0]
+            #     for operand in node[1:]:
+            #         add_edges(operand, prev_node)
+            # else:
+            for created_item in creates:
+                graph.add_edge(node, created_item, action=action_node)  # Set action_node as attribute of edge
 
         add_edges(expression_tree, action_node)
 
@@ -222,43 +311,20 @@ class DAGBuilder:
 
 
 class Executor:
-
-    def parse_file(self, file_path):
-        with open(file_path, 'r') as file:
-            content = file.read()
-
-        pattern = r'(Act [\w\W]*?\.)'
-        acts = re.findall(pattern, content, re.DOTALL)
-
-        return acts
-
     def trim_values_end(self, values):
         for i in range(len(values)):
             if values[i].endswith('.'):
                 values[i] = values[i].rstrip('.')
         return values
 
-    def retrieve_action_list(self):
-        template_path = '../../eflint-server/web-server/test.eflint'  # Replace with the actual file path
-        parsed_acts = self.parse_file(template_path)
-        action_list = []
-        action_parser = ActionParser()
-
-        for act in parsed_acts:
-            action = action_parser.parse_string(act)
-            action_list.append(action)
-            preconditions = action['Holds when'] + action['Conditioned by']
-
-        return action_list
-
     def retrieve_scenarios(self, action_list):
         items = {}
         for dict_item in action_list:
             act = dict_item['Act'][0]
-            holds_when = dict_item['Holds when']
-            creates = dict_item['Creates']
+            creates = dict_item['Creates'].copy()
             creates = self.trim_values_end(creates)
-            items[act] = {'Holds when': holds_when, 'Creates': creates}
+            creates = self.split_string_until_open_parenthesis(creates)
+            items[act] = {'Act': act, 'Creates': creates}
 
         dag_builder = DAGBuilder()
         dependency_graph = dag_builder.visualise_graph(items)
@@ -266,6 +332,28 @@ class Executor:
 
         return scenarios
 
+    def split_string_until_open_parenthesis(self, creates):
+        for i in range(len(creates)):
+            item = creates[i]
+            tokens = item.split()
+            result = ""
+
+            if tokens:
+                first_token = tokens[0]
+                index = first_token.find('(')
+                if index != -1:
+                    result = first_token[:index]
+                else:
+                    result = first_token
+            creates[i] = result
+
+        return creates
     # logic_expression_string = "Not(administrator()) || candidate == candidate2 && test_fact"
     # logic_expression_string = "Not (administrator()) || ( candidate == candidate2 ) && test_fact"
     # parsed_expression = action_parser.infix_to_rpn(logic_expression_string)
+
+# executor = Executor()
+# action_parser = ActionParser()
+# action_list = action_parser.retrieve_action_list()
+# scenarios = executor.retrieve_scenarios(action_list)
+# print(scenarios)

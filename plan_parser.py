@@ -4,7 +4,8 @@ import os
 import requests
 import time
 import traceback
-from act_parser import Executor
+import inflect
+from act_parser import Executor, ActionParser
 
 
 class UBLHandler(xml.sax.ContentHandler):
@@ -104,9 +105,8 @@ def web_server_check():
         try:
             response = requests.get(url)
             if response.status_code == 200:
-                print("Response received:", response.json())
+                print("eFLINT Server OK")
                 return True
-            print("No response yet...")
         except requests.exceptions.RequestException as e:
             print("Error:", e)
         time.sleep(1)
@@ -128,11 +128,7 @@ def define_fact_payload(value_count, uuid, fact, fact_values):
 def create_fact(fact, values, uuid):
     url = "http://localhost:8080/command"
     value_count = sum(isinstance(item, list) for item in values)
-
-    for item in values:
-        if isinstance(item[1], str):
-            item[1] = f'"{item[1]}"'
-
+    values = [[item[0], f'"{item[1]}"'] if isinstance(item[1], str) else item for item in values]
     payload = define_fact_payload(value_count, uuid, fact, values)
 
     while True:
@@ -140,128 +136,19 @@ def create_fact(fact, values, uuid):
             response = requests.post(url, payload)
             if response.status_code == 200:
                 errors = response.json()["data"]["response"]["errors"]
-                if len(errors) != 0:
-                    print("Error during fact creation: ", errors[0])
+                if errors:
+                    print("Error during fact creation:", errors[0])
                     return 0
-                print("Response received - fact created:", response.json())
                 return 1
-            print("Error. Response Status Code: ", response.status_code)
+            print("Error. Response Status Code:", response.status_code)
             return 0
 
         except requests.exceptions.RequestException as e:
             print("Request Error:", e)
             return 0
         except Exception as e:
-            print("Error:", e)
+            print(f"Error: {e}, eFLINT instance still instantiating.")
         time.sleep(0.5)
-
-
-def create_instance():
-    url = "http://localhost:8080/create"
-    payload = '{ "template-name": "test.eflint", "flint-search-paths": []}'
-
-    try:
-        response = requests.post(url, payload)
-        if response.status_code == 200:
-            print("Response received - instance created:", response.json())
-            return response.json()
-        else:
-            return None
-    except requests.exceptions.RequestException as e:
-        print("Error:", e)
-        return None
-
-
-def eflint_communicate(eflint_facts, eflint_fact_values):
-    command = ['wsl', 'bash', '-c', 'cd /mnt/c/Users/lukeb/Documents/Education/MSc_Software_Engineering/Thesis'
-                                    '/Project/eflint-server/web-server && mvn exec:java -Dexec.mainClass="eflint.Main"']
-
-    # Run eflint server in the background
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    # write_eflint_template(eflint_facts)
-    web_server_status = web_server_check()
-    instance_created = create_instance()
-
-    if instance_created is not None:
-        print(instance_created['data']['uuid'])
-        for key, value in eflint_fact_values.items():
-            for individual_values in value:
-                create_fact(key, individual_values, instance_created['data']['uuid'])
-    else:
-        print("Instance not created! Facts were not added to environment.")
-
-    enabled_transitions = check_enabled_transitions(instance_created)
-    all_transitions = retrieve_all_transitions()
-
-    command = ['wsl', 'bash', '-c', 'kill $(lsof -t -i:8080)']
-    subprocess.run(command, capture_output=True)
-
-
-def retrieve_all_transitions():
-    executor = Executor()
-    action_list = executor.retrieve_action_list()
-    # scenarios = executor.retrieve_scenarios(action_list)
-
-    return action_list
-
-
-def check_enabled_transitions(instance):
-    enabled_transitions = set()
-
-    url = 'http://localhost:8080/command'
-    myobj = {
-        "uuid": instance["data"]["uuid"],
-        "request-type": "command",
-        "data":
-            {
-                "command": "status"
-            }
-    }
-
-    transitions = requests.post(url, json=myobj).json()["data"]["response"]["all-enabled-transitions"]
-
-    for transition in transitions:
-        enabled_transitions.add(transition["fact-type"])
-
-    return enabled_transitions
-
-
-def try_parse(file):
-    # Construct the path to the XML file
-    parser = xml.sax.make_parser()
-    document_handler = UBLHandler()
-    parser.setContentHandler(document_handler)
-    composite_facts = set()
-    composite_fact_values = {}
-
-    try:
-        parser.parse(file)
-
-        facts = list(document_handler.facts)
-        fact_values = document_handler.fact_values
-        composite_fact_creation(document_handler, composite_facts, composite_fact_values)
-        composite_facts_list = list(composite_facts)
-        facts.sort()
-        composite_facts_list.sort()
-
-        # Extending fact types and facts with composite instances
-        facts.extend(composite_facts_list)
-        fact_values.update(composite_fact_values)
-
-        return facts, fact_values
-
-    except Exception:
-        print(traceback.format_exc())
-
-
-def update_with_merge(current_dict, new_dict):
-    for key, value in new_dict.items():
-        if key in current_dict:
-            current_dict[key] += value
-        else:
-            current_dict[key] = value
-    return current_dict
 
 
 def composite_fact_creation(document_handler, composite_facts, composite_fact_values):
@@ -284,6 +171,238 @@ def composite_fact_creation(document_handler, composite_facts, composite_fact_va
                 composite_facts.add(fact)
 
 
+def create_instance():
+    url = "http://localhost:8080/create"
+    payload = '{ "template-name": "test.eflint", "flint-search-paths": []}'
+
+    try:
+        response = requests.post(url, payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return None
+
+
+def eflint_initiate(eflint_facts, eflint_fact_values):
+    command = ['wsl', 'bash', '-c', 'cd /mnt/c/Users/lukeb/Documents/Education/MSc_Software_Engineering/Thesis'
+                                    '/Project/eflint-server/web-server && mvn exec:java -Dexec.mainClass="eflint.Main"']
+
+    # Run eflint server in the background
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    # write_eflint_template(eflint_facts)
+    web_server_status = web_server_check()
+    instance_created = create_instance()
+
+    if instance_created is not None:
+        for key, value in eflint_fact_values.items():
+            for individual_values in value:
+                create_fact(key, individual_values, instance_created['data']['uuid'])
+    else:
+        print("Instance not created! Facts were not added to environment.")
+
+    print(f'Facts created in eFLINT instance: {instance_created["data"]["uuid"]}')
+    return instance_created
+
+
+def retrieve_all_scenarios(executor, action_parser):
+    action_list = action_parser.retrieve_action_list()
+    scenarios = executor.retrieve_scenarios(action_list)
+
+    return scenarios
+
+
+def check_enabled_transitions(instance):
+    enabled_transitions = {}
+
+    url = 'http://localhost:8080/command'
+    myobj = {
+        "uuid": instance["data"]["uuid"],
+        "request-type": "command",
+        "data":
+            {
+                "command": "status"
+            }
+    }
+
+    transitions = requests.post(url, json=myobj).json()["data"]["response"]["all-enabled-transitions"]
+
+    for transition in transitions:
+        enabled_transitions[transition["fact-type"]] = transition["textual"]
+
+    return enabled_transitions
+
+
+def try_parse(file):
+    parser = xml.sax.make_parser()
+    document_handler = UBLHandler()
+    parser.setContentHandler(document_handler)
+    composite_facts = set()
+    composite_fact_values = {}
+
+    try:
+        parser.parse(file)
+
+        facts = sorted(document_handler.facts)
+        composite_fact_creation(document_handler, composite_facts, composite_fact_values)
+
+        facts.extend(sorted(composite_facts))
+        document_handler.fact_values.update(composite_fact_values)
+
+        return facts, document_handler.fact_values
+
+    except Exception:
+        print(traceback.format_exc())
+
+
+def update_with_merge(current_dict, new_dict):
+    for key, value in new_dict.items():
+        if key in current_dict:
+            current_dict[key] += value
+        else:
+            current_dict[key] = value
+    return current_dict
+
+
+def eflint_terminate():
+    command = ['wsl', 'bash', '-c', 'kill $(lsof -t -i:8080)']
+    subprocess.run(command, capture_output=True)
+
+
+def check_valid_scenarios(instance, executor, action_parser):
+    valid_scenarios = []
+    incomplete_scenarios = []
+    all_scenarios = retrieve_all_scenarios(executor, action_parser)
+
+    for scenario in all_scenarios:
+        valid_bool = True
+        violating_transition = ""
+        for transition in scenario:
+            enabled_transitions = check_enabled_transitions(instance)
+
+            if transition in enabled_transitions:
+                response = eflint_server_request(instance, enabled_transitions[transition])
+                output_events = response["data"]["response"]["output-events"]
+                violations = response["data"]["response"]["violations"]
+
+                if not (output_events and not violations):
+                    violating_transition = transition
+                    valid_bool = False
+                    break
+            else:
+                violating_transition = transition
+                valid_bool = False
+                break
+
+        if valid_bool:
+            valid_scenarios.append(scenario)
+        else:
+            incomplete_scenarios.append([scenario, violating_transition])
+
+    return valid_scenarios, incomplete_scenarios
+
+def provide_alternative_action(incomplete_scenario, instance, action_parser):
+    scenario, violated_action = incomplete_scenario
+    p = inflect.engine()
+
+    for transition in scenario:
+        enabled_transitions = check_enabled_transitions(instance)
+
+        if transition == violated_action:
+            action = action_parser.actions[transition]
+            if check_transition_holds(instance, action):
+                print(f"Action {transition} holds. Permuting pre-conditions until transition is enabled.")
+                original_precondition = action["Conditioned by"][0]
+                precondition_permutations = action_parser.derive_alternative_preconditions(original_precondition)
+
+                for i in range(1, len(precondition_permutations)):
+                    precondition = precondition_permutations[i]
+                    number_string = p.number_to_words(i)
+                    alt_name = f'{transition}_alt{number_string}'
+                    try_alternative_actions(instance, action, precondition, alt_name)
+                    trigger_transition(instance, alt_name, action["Actor"], action["Recipient"])
+                    result = check_transition_enabled(instance, alt_name, action["Actor"], action["Recipient"])
+
+                    if result == "success":
+                        difference = [x for x, y in zip(precondition, original_precondition.split(' ')) if x != y]
+                        return f"Successful Transition: {alt_name} \nValid Precondition: {precondition}"
+                return f"None of the permuted pre-conditions helped in enabling {transition}."
+            else:
+                result = f"Action {transition} does not hold. Make sure that values for Actor: {action['Actor']}"
+                result += f", Recipient: {action['Recipient']}" if action["Recipient"] else ""
+                result += " are provided in the UBL plans submitted."
+                return result
+
+        if transition in enabled_transitions:
+            eflint_server_request(instance, enabled_transitions[transition])
+
+
+def try_alternative_actions(instance, action, permuted_precondition, alt_name):
+    temp_action = action.copy()
+    temp_action["Act"][0] = alt_name
+    temp_action["Conditioned by"] = [' '.join(permuted_precondition)]
+    executable_action = ' '.join(f'{key} {" ".join(values)}' for key, values in temp_action.items() if values)
+
+    return eflint_server_request(instance, executable_action)
+
+
+def check_transition_validity(instance, act, actor, recipient, query_op):
+    phrase = f"?{query_op}({act}({actor}"
+    phrase += f", {', '.join(recipient)}" if recipient else ""
+    phrase += f")) Where Holds({actor})"
+    if recipient:
+        phrase += f" && Holds({recipient[0]})"
+
+    response = eflint_server_request(instance, phrase)
+    query_result = response["data"]["response"]["query-results"][0]
+
+    return query_result
+
+
+def trigger_transition(instance, act, actor, recipient):
+    phrase = f"+({act}({actor[0]}"
+    phrase += f", {', '.join(recipient)}" if recipient else ""
+    phrase += f")) Where Holds({actor[0]})"
+    if recipient:
+        phrase += f" && Holds({recipient[0]})"
+
+    return eflint_server_request(instance, phrase)
+
+
+def check_transition_enabled(instance, act, actor, recipient):
+    actor = actor[0]
+    return check_transition_validity(instance, act, actor, recipient, "Enabled")
+
+
+def check_transition_holds(instance, action):
+    act = action['Act'][0]
+    actor = action['Actor'][0]
+    recipient = action['Recipient']
+
+    return check_transition_validity(instance, act, actor, recipient, "Holds")
+
+
+def eflint_server_request(instance, phrase):
+    url = 'http://localhost:8080/command'
+    object = {
+        "uuid": instance["data"]["uuid"],
+        "request-type": "command",
+        "data":
+            {
+                "command": "phrase",
+                "text": phrase
+            }
+    }
+
+    return requests.post(url, json=object).json()
+
+
+executor = Executor()
+action_parser = ActionParser()
+
 subdirectory = "business_documents"
 facts = ['Fact documents_added Identified by String.']
 fact_values = {}
@@ -294,13 +413,18 @@ for filename in os.listdir(subdirectory):
         facts.extend(new_facts)
         fact_values = update_with_merge(fact_values, new_fact_values)
         # fact_values.update(new_fact_values)
-        print(new_facts)
 
-eflint_communicate(facts, fact_values)
+instance_created = eflint_initiate(facts, fact_values)
+valid_scenarios, incomplete_scenarios = check_valid_scenarios(instance_created, executor, action_parser)
 
-# # Check if value is a decimal value (negative, positive) or not
-# def is_digit(n: str) -> bool:
-#     return n.replace('.', '', 1).isdigit()
+for valid_scenario in valid_scenarios:
+    print(f"Valid Scenario: {valid_scenario}\n")
 
+for i in range(len(incomplete_scenarios)):
+    scenario, violated_action = incomplete_scenarios[i]
+    print(f"Incomplete Scenario: {scenario}")
+    print(f"Violated Action: {violated_action}\n")
+    alternative_action = provide_alternative_action(incomplete_scenarios[i], instance_created, action_parser)
+    print(alternative_action)
 
-# scenarios = executor.retrieve_scenarios(action_list)
+eflint_terminate()
