@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/python_parser.iml" filepath="$PROJECT_DIR$/.idea/python_parser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/lb_uva_msc_thesis.iml" filepath="$PROJECT_DIR$/.idea/lb_uva_msc_thesis.iml" />
     </modules>
   </component>
 </project>
