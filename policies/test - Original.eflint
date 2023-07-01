@@ -115,3 +115,31 @@ Fact taxtotal Identified by  taxamount .
 Fact taxtotal_taxsubtotal Identified by  taxableamount * taxamount .
 Fact taxtotal_taxsubtotal_taxcategory Identified by  id * percent * taxexemptionreason * taxexemptionreasoncode .
 Fact taxtotal_taxsubtotal_taxcategory_taxscheme Identified by  id .
+
+Fact eu-country
+    Identified by "AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT",
+    "LU","MT","NL","PL","PT","RO","SK","SI","ES","SE"
+    Derived from eu-country(accountingsupplierparty_party_postaladdress_country.identificationcode).
+
+Fact customs_free_consignments Identified by shipment_consignment.
+Fact act_result Identified by issuedate.
+Fact act_result_second Identified by invoiceperiod.
+
+Act check-singlemarket
+    Actor accountingsupplierparty_party_postaladdress_country
+    Recipient shipment_consignment
+    Holds when accountingsupplierparty_party_postaladdress_country, shipment_consignment
+    Conditioned by eu-country(accountingsupplierparty_party_postaladdress_country.identificationcode)
+    Creates customs_free_consignments(shipment_consignment).
+
+Act check-issuedate
+    Actor issuedate
+    Holds when issuedate
+    Conditioned by issuedate == "2022-12-15"
+    Creates act_result(issuedate).
+
+Act check-invoiceperiod
+    Actor invoiceperiod
+    Holds when invoiceperiod
+    Conditioned by invoiceperiod.startdate == "2022-11-01"
+    Creates act_result_second(invoiceperiod).

@@ -1,0 +1,39 @@
+Fact documents_added Identified by "awardednotification", "tender", "unawardednotification".
+Fact awardednotification_awarddate Identified by String.
+Fact awardednotification_contractfolderid Identified by String.
+Fact awardednotification_contractname Identified by String.
+Fact awardednotification_id Identified by Int.
+Fact awardednotification_issuedate Identified by String.
+Fact awardednotification_websiteuri Identified by String.
+Fact awardednotification_receiverparty Identified by  awardednotification_websiteuri .
+Fact awardednotification_senderparty Identified by  awardednotification_websiteuri .
+Fact awardednotification_tenderresult Identified by  awardednotification_awarddate .
+Fact tender_buyerprofileuri Identified by String.
+Fact tender_contractfolderid Identified by String.
+Fact tender_contractname Identified by String.
+Fact tender_feeamount Identified by String.
+Fact tender_id Identified by String.
+Fact tender_issuedate Identified by String.
+Fact tender_websiteuri Identified by String.
+Fact tender_contractingparty Identified by  tender_buyerprofileuri * tender_buyerprofileuri * tender_buyerprofileuri * tender_buyerprofileuri .
+Fact tender_contractingparty_party Identified by  tender_websiteuri .
+Fact tender_signature Identified by  tender_id .
+Fact tender_tenderedproject Identified by  tender_feeamount .
+Fact tender_tendererparty Identified by  tender_websiteuri .
+Fact unawardednotification_awarddate Identified by String.
+Fact unawardednotification_contractfolderid Identified by String.
+Fact unawardednotification_contractname Identified by String.
+Fact unawardednotification_id Identified by Int.
+Fact unawardednotification_issuedate Identified by String.
+Fact unawardednotification_websiteuri Identified by String.
+Fact unawardednotification_receiverparty Identified by  unawardednotification_websiteuri .
+Fact unawardednotification_senderparty Identified by  unawardednotification_websiteuri .
+Fact unawardednotification_tenderresult Identified by  unawardednotification_awarddate .
+
+
+Bool test-fact
+Act test-act
+    Actor tender_id
+    Holds when tender_id
+    Conditioned by documents_added("tender")
+    Creates test-fact

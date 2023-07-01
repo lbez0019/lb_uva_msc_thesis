@@ -1,0 +1,88 @@
+Fact documents_added Identified by "awarded_notification", "unawarded_notification", "contract_award", "tender"
+Fact awardednotification_awarddate Identified by String
+Fact awardednotification_contractfolderid Identified by String
+Fact awardednotification_contractname Identified by String
+Fact awardednotification_id Identified by "N-001", "N-002", "N-003"
+Fact awardednotification_issuedate Identified by String
+Fact awardednotification_websiteuri Identified by "https://lukebezzina.com", "https://www.unido.org"
+Fact awardednotification_receiverparty Identified by  awardednotification_websiteuri
+Fact awardednotification_senderparty Identified by  awardednotification_websiteuri
+Fact awardednotification_signature Identified by  awardednotification_id
+Fact awardednotification_tenderresult Identified by  awardednotification_awarddate
+Fact contractawardnotice_awarddate Identified by String
+Fact contractawardnotice_buyerprofileuri Identified by String
+Fact contractawardnotice_contractfolderid Identified by String
+Fact contractawardnotice_id Identified by String
+Fact contractawardnotice_issuedate Identified by String
+Fact contractawardnotice_websiteuri Identified by String
+Fact contractawardnotice_contractingparty Identified by  contractawardnotice_buyerprofileuri
+Fact contractawardnotice_contractingparty_party Identified by  contractawardnotice_websiteuri
+Fact contractawardnotice_signature Identified by  contractawardnotice_id
+Fact contractawardnotice_tenderresult Identified by  contractawardnotice_awarddate
+Fact tender_buyerprofileuri Identified by String
+Fact tender_contractfolderid Identified by String
+Fact tender_contractname Identified by String
+Fact tender_feeamount Identified by Int
+Fact tender_id Identified by String
+Fact tender_issuedate Identified by String
+Fact tender_websiteuri Identified by "https://lukebezzina.com", "https://www.unido.org"
+Fact tender_contractingparty Identified by  tender_buyerprofileuri
+Fact tender_contractingparty_party Identified by  tender_websiteuri
+Fact tender_signature Identified by  tender_id
+Fact tender_tenderedproject Identified by  tender_feeamount
+Fact tender_tendererparty Identified by  tender_websiteuri
+Fact unawardednotification_awarddate Identified by String
+Fact unawardednotification_contractfolderid Identified by String
+Fact unawardednotification_contractname Identified by String
+Fact unawardednotification_id Identified by String
+Fact unawardednotification_issuedate Identified by String
+Fact unawardednotification_websiteuri Identified by "https://lukebezzina.com", "https://www.unido.org"
+Fact unawardednotification_receiverparty Identified by  unawardednotification_websiteuri
+Fact unawardednotification_senderparty Identified by  unawardednotification_websiteuri
+Fact unawardednotification_signature Identified by  unawardednotification_id
+Fact unawardednotification_tenderresult Identified by  unawardednotification_awarddate
+
+Bool tender_submitted.
+Bool tender_received.
+Bool awarded_notification.
+Bool unawarded_notification.
+Bool notification_received.
+
+
+//  Holds when send_awarded_notification(awardednotification_senderparty, awardednotification_receiverparty) || send_unawarded_notification(unawardednotification_senderparty, unawardednotification_receiverparty)
+//  Holds when unawarded_notification || awarded_notification
+//     Holds when ( unawarded_notification && Not ( awarded_notification ) ) || ( Not ( unawarded_notification ) && awarded_notification )
+Act receive_notification
+    Actor tender_websiteuri
+    Conditioned by unawardednotification_receiverparty(tender_websiteuri) || awardednotification_receiverparty(tender_websiteuri)
+    Creates notification_received.
+
+Act send_unawarded_notification
+    Actor unawardednotification_senderparty
+    Recipient unawardednotification_receiverparty
+    Conditioned by unawardednotification_senderparty && Not(unawardednotification_receiverparty) && (unawardednotification_contractfolderid == tender_contractfolderid)
+    Creates receive_notification (tender_websiteuri) Where Holds(unawardednotification_receiverparty(tender_websiteuri)).
+
+Act send_awarded_notification
+    Actor awardednotification_senderparty
+    Recipient awardednotification_receiverparty
+    Conditioned by awardednotification_senderparty && awardednotification_receiverparty && awardednotification_contractfolderid == tender_contractfolderid
+    Creates receive_notification (tender_websiteuri) Where Holds(awardednotification_receiverparty(tender_websiteuri)).
+
+Act receive_tender_documents
+    Actor tender_contractingparty_party
+    Conditioned by tender_contractingparty_party
+    Creates send_awarded_notification (awardednotification_senderparty, awardednotification_receiverparty) Where Holds(awardednotification_senderparty) && Holds (awardednotification_receiverparty), send_unawarded_notification (unawardednotification_senderparty, unawardednotification_receiverparty) Where Holds (unawardednotification_senderparty) && Holds (unawardednotification_receiverparty).
+
+Act submit_tender_documents
+    Actor tender_tendererparty
+    Recipient tender_contractingparty_party
+    Holds when True
+    Conditioned by tender_contractingparty_party != tender_tendererparty && tender_tendererparty && tender_contractingparty_party
+    Creates receive_tender_documents (tender_contractingparty_party) Where Holds(tender_contractingparty_party).
+
+
+Extend Act send_awarded_notification Terminates receive_tender_documents (tender_contractingparty_party).
+Extend Act send_unawarded_notification Terminates receive_tender_documents (tender_contractingparty_party).
+Extend Act receive_notification Terminates send_awarded_notification (awardednotification_senderparty, awardednotification_receiverparty), send_unawarded_notification (unawardednotification_senderparty, unawardednotification_receiverparty).
+

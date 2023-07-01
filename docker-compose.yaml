@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  eflint-web-server:
+    build: ./eflint-server
+    container_name: eflint-web-server
+    ports:
+      - "8080:8080"
