@@ -1,0 +1,161 @@
+Fact documents_added Identified by String.
+Fact digitalagreement_agreementtypecode Identified by String.
+Fact digitalagreement_availabilitytimepercent Identified by String.
+Fact digitalagreement_cityname Identified by String.
+Fact digitalagreement_description Identified by String.
+Fact digitalagreement_durationmeasure Identified by Int.
+Fact digitalagreement_electronicmail Identified by String.
+Fact digitalagreement_endpointuri Identified by String.
+Fact digitalagreement_formatid Identified by String.
+Fact digitalagreement_id Identified by String.
+Fact digitalagreement_identificationcode Identified by String.
+Fact digitalagreement_initiatingpartyindicator Identified by String.
+Fact digitalagreement_issuedate Identified by String.
+Fact digitalagreement_minimumdowntimescheduledurationmeasure Identified by Int.
+Fact digitalagreement_minimumresponsetimedurationmeasure Identified by Int.
+Fact digitalagreement_name Identified by String.
+Fact digitalagreement_previousversionid Identified by String.
+Fact digitalagreement_privatepartyindicator Identified by String.
+Fact digitalagreement_protocolid Identified by String.
+Fact digitalagreement_schemauri Identified by String.
+Fact digitalagreement_servicetypecode Identified by String.
+Fact digitalagreement_ublversionid Identified by String.
+Fact digitalagreement_versionid Identified by String.
+Fact digitalagreement_agreementcountry Identified by  digitalagreement_identificationcode .
+Fact digitalagreement_digitalagreementterms Identified by  digitalagreement_description .
+Fact digitalagreement_digitalagreementterms_adoptionperiod Identified by  digitalagreement_durationmeasure .
+Fact digitalagreement_digitalagreementterms_servicelevelagreement Identified by  digitalagreement_availabilitytimepercent * digitalagreement_id * digitalagreement_minimumdowntimescheduledurationmeasure * digitalagreement_minimumresponsetimedurationmeasure * digitalagreement_servicetypecode .
+Fact digitalagreement_digitalprocess Identified by  digitalagreement_id .
+Fact digitalagreement_digitalprocess_digitalcollaboration Identified by  digitalagreement_id .
+Fact digitalagreement_digitalprocess_digitalcollaboration_receivingdigitalservice Identified by  digitalagreement_id .
+Fact digitalagreement_digitalprocess_digitalcollaboration_receivingdigitalservice_digitaldeliverychannel_digitalmessagedelivery Identified by  digitalagreement_endpointuri * digitalagreement_protocolid .
+Fact digitalagreement_digitalprocess_digitalcollaboration_receivingdigitalservice_digitaldocumentmetadata Identified by  digitalagreement_formatid * digitalagreement_schemauri * digitalagreement_versionid .
+Fact digitalagreement_digitalprocess_digitalcollaboration_sendingdigitalservice Identified by  digitalagreement_id .
+Fact digitalagreement_digitalprocess_digitalcollaboration_sendingdigitalservice_digitaldeliverychannel_digitalmessagedelivery Identified by  digitalagreement_endpointuri * digitalagreement_protocolid .
+Fact digitalagreement_digitalprocess_digitalcollaboration_sendingdigitalservice_digitaldocumentmetadata Identified by  digitalagreement_formatid * digitalagreement_schemauri * digitalagreement_versionid .
+Fact digitalagreement_participantparty Identified by  digitalagreement_initiatingpartyindicator * digitalagreement_privatepartyindicator .
+Fact digitalagreement_participantparty_legalcontact Identified by  digitalagreement_electronicmail * digitalagreement_name .
+Fact digitalagreement_participantparty_party_partyidentification Identified by  digitalagreement_id .
+Fact digitalagreement_participantparty_party_partyname Identified by  digitalagreement_name .
+Fact digitalagreement_participantparty_party_postaladdress Identified by  digitalagreement_cityname .
+Fact digitalagreement_participantparty_party_postaladdress_country Identified by  digitalagreement_identificationcode .
+Fact digitalagreement_two_agreementtypecode Identified by String.
+Fact digitalagreement_two_availabilitytimepercent Identified by String.
+Fact digitalagreement_two_cityname Identified by String.
+Fact digitalagreement_two_description Identified by String.
+Fact digitalagreement_two_durationmeasure Identified by Int.
+Fact digitalagreement_two_electronicmail Identified by String.
+Fact digitalagreement_two_endpointuri Identified by String.
+Fact digitalagreement_two_formatid Identified by String.
+Fact digitalagreement_two_id Identified by String.
+Fact digitalagreement_two_identificationcode Identified by String.
+Fact digitalagreement_two_initiatingpartyindicator Identified by String.
+Fact digitalagreement_two_issuedate Identified by String.
+Fact digitalagreement_two_minimumdowntimescheduledurationmeasure Identified by Int.
+Fact digitalagreement_two_minimumresponsetimedurationmeasure Identified by Int.
+Fact digitalagreement_two_name Identified by String.
+Fact digitalagreement_two_previousversionid Identified by String.
+Fact digitalagreement_two_privatepartyindicator Identified by String.
+Fact digitalagreement_two_protocolid Identified by String.
+Fact digitalagreement_two_schemauri Identified by String.
+Fact digitalagreement_two_servicetypecode Identified by String.
+Fact digitalagreement_two_ublversionid Identified by String.
+Fact digitalagreement_two_versionid Identified by String.
+Fact digitalagreement_two_agreementcountry Identified by  digitalagreement_two_identificationcode .
+Fact digitalagreement_two_digitalagreementterms Identified by  digitalagreement_two_description .
+Fact digitalagreement_two_digitalagreementterms_adoptionperiod Identified by  digitalagreement_two_durationmeasure .
+Fact digitalagreement_two_digitalagreementterms_servicelevelagreement Identified by  digitalagreement_two_availabilitytimepercent * digitalagreement_two_id * digitalagreement_two_minimumdowntimescheduledurationmeasure * digitalagreement_two_minimumresponsetimedurationmeasure * digitalagreement_two_servicetypecode .
+Fact digitalagreement_two_digitalprocess Identified by  digitalagreement_two_id .
+Fact digitalagreement_two_digitalprocess_digitalcollaboration Identified by  digitalagreement_two_id .
+Fact digitalagreement_two_digitalprocess_digitalcollaboration_receivingdigitalservice Identified by  digitalagreement_two_id .
+Fact digitalagreement_two_digitalprocess_digitalcollaboration_receivingdigitalservice_digitaldeliverychannel_digitalmessagedelivery Identified by  digitalagreement_two_endpointuri * digitalagreement_two_protocolid .
+Fact digitalagreement_two_digitalprocess_digitalcollaboration_receivingdigitalservice_digitaldocumentmetadata Identified by  digitalagreement_two_formatid * digitalagreement_two_schemauri * digitalagreement_two_versionid .
+Fact digitalagreement_two_digitalprocess_digitalcollaboration_sendingdigitalservice Identified by  digitalagreement_two_id .
+Fact digitalagreement_two_digitalprocess_digitalcollaboration_sendingdigitalservice_digitaldeliverychannel_digitalmessagedelivery Identified by  digitalagreement_two_endpointuri * digitalagreement_two_protocolid .
+Fact digitalagreement_two_digitalprocess_digitalcollaboration_sendingdigitalservice_digitaldocumentmetadata Identified by  digitalagreement_two_formatid * digitalagreement_two_schemauri * digitalagreement_two_versionid .
+Fact digitalagreement_two_participantparty Identified by  digitalagreement_two_initiatingpartyindicator * digitalagreement_two_privatepartyindicator .
+Fact digitalagreement_two_participantparty_legalcontact Identified by  digitalagreement_two_electronicmail * digitalagreement_two_name .
+Fact digitalagreement_two_participantparty_party_partyidentification Identified by  digitalagreement_two_id .
+Fact digitalagreement_two_participantparty_party_partyname Identified by  digitalagreement_two_name .
+Fact digitalagreement_two_participantparty_party_postaladdress Identified by  digitalagreement_two_cityname .
+Fact digitalagreement_two_participantparty_party_postaladdress_country Identified by  digitalagreement_two_identificationcode .
+Fact digitalcapability_cityname Identified by String.
+Fact digitalcapability_endpointuri Identified by String.
+Fact digitalcapability_formatid Identified by String.
+Fact digitalcapability_id Identified by String.
+Fact digitalcapability_identificationcode Identified by String.
+Fact digitalcapability_issuedate Identified by String.
+Fact digitalcapability_name Identified by String.
+Fact digitalcapability_protocolid Identified by String.
+Fact digitalcapability_schemauri Identified by String.
+Fact digitalcapability_ublversionid Identified by String.
+Fact digitalcapability_versionid Identified by String.
+Fact digitalcapability_businessparty_partyidentification Identified by  digitalcapability_id .
+Fact digitalcapability_businessparty_partyname Identified by  digitalcapability_name .
+Fact digitalcapability_businessparty_postaladdress Identified by  digitalcapability_cityname .
+Fact digitalcapability_businessparty_postaladdress_country Identified by  digitalcapability_identificationcode .
+Fact digitalcapability_digitalprocess Identified by  digitalcapability_id .
+Fact digitalcapability_digitalprocess_digitalcollaboration Identified by  digitalcapability_id .
+Fact digitalcapability_digitalprocess_digitalcollaboration_receivingdigitalservice Identified by  digitalcapability_id .
+Fact digitalcapability_digitalprocess_digitalcollaboration_receivingdigitalservice_digitaldeliverychannel_digitalmessagedelivery Identified by  digitalcapability_endpointuri * digitalcapability_protocolid .
+Fact digitalcapability_digitalprocess_digitalcollaboration_receivingdigitalservice_digitaldocumentmetadata Identified by  digitalcapability_formatid * digitalcapability_schemauri * digitalcapability_versionid .
+Fact digitalcapability_digitalprocess_digitalcollaboration_sendingdigitalservice Identified by  digitalcapability_id .
+Fact digitalcapability_digitalprocess_digitalcollaboration_sendingdigitalservice_digitaldeliverychannel_digitalmessagedelivery Identified by  digitalcapability_endpointuri * digitalcapability_protocolid .
+Fact digitalcapability_digitalprocess_digitalcollaboration_sendingdigitalservice_digitaldocumentmetadata Identified by  digitalcapability_formatid * digitalcapability_schemauri * digitalcapability_versionid .
+Fact digitalcapability_senderparty_partyidentification Identified by  digitalcapability_id .
+Fact digitalcapability_senderparty_partyname Identified by  digitalcapability_name .
+Fact digitalcapability_senderparty_postaladdress Identified by  digitalcapability_cityname .
+Fact digitalcapability_senderparty_postaladdress_country Identified by  digitalcapability_identificationcode .
+
+
+Bool partner_agreement_finalised.
+
+Act validate_digital_agreement
+    Actor
+    Recipient
+    Conditioned by
+    Creates.
+
+Act receive_reconciled_digital_agreement
+    Actor
+    Conditioned by
+    Creates.
+
+Act send_reconciled_digital_agreement
+    Actor
+    Recipient
+    Conditioned by
+    Creates.
+
+Act reconcile_digital_agreement
+    Actor
+    Conditioned by
+    Creates.
+
+Act receive_digital_agreement
+    Actor digitalagreement_participantparty_party_partyidentification
+    Conditioned by
+    Creates reconcile_digital_agreement (digitalcapability_businessparty_partyidentification).
+
+Act send_digital_agreement
+    Actor digitalcapability_senderparty_partyidentification
+    Recipient digitalcapability_businessparty_partyidentification
+    Conditioned by
+    Creates.
+
+Act match_digital_capabilities
+    Actor digitalcapability_businessparty_partyidentification
+    Conditioned by digitalcapability_businessparty_partyidentification
+    Creates send_digital_agreement (digitalcapability_businessparty_partyidentification, digitalcapability_senderparty_partyidentification), partner_agreement_finalised.
+
+Act receive_digital_capabilities
+    Actor digitalcapability_businessparty_partyidentification
+    Conditioned by digitalcapability_businessparty_partyidentification
+    Creates match_digital_capabilities (digitalcapability_businessparty_partyidentification).
+
+Act send_digital_capabilities
+    Actor digitalcapability_senderparty_partyidentification
+    Recipient digitalcapability_businessparty_partyidentification
+    Holds when True
+    Conditioned by digitalcapability_senderparty_partyidentification && digitalcapability_businessparty_partyidentification
+    Creates receive_digital_capabilities(digitalcapability_businessparty_partyidentification) Where Holds digitalcapability_businessparty_partyidentification.

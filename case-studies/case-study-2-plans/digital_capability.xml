@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DigitalCapability
+xmlns="urn:oasis:names:specification:ubl:schema:xsd:DigitalCapability-2"
+xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+  >
+  <cbc:UBLVersionID>2.2</cbc:UBLVersionID>
+  <cbc:ID>C12345-2023</cbc:ID>
+  <cbc:IssueDate>2023-01-01</cbc:IssueDate>
+  <cac:SenderParty>
+    <cac:PartyIdentification>
+      <cbc:ID schemeID="DK:CVR">DK12345678</cbc:ID>
+    </cac:PartyIdentification>
+    <cac:PartyName>
+      <cbc:Name>Papirøen Food ApS</cbc:Name>
+    </cac:PartyName>
+    <cac:PostalAddress>
+      <cbc:CityName>Copenhagen</cbc:CityName>
+      <cac:Country>
+        <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+      </cac:Country>
+    </cac:PostalAddress>
+  </cac:SenderParty>
+
+  <cac:BusinessParty>
+    <cac:PartyIdentification>
+      <cbc:ID schemeID="IT:VAT">IT01234567890</cbc:ID>
+    </cac:PartyIdentification>
+    <cac:PartyName>
+      <cbc:Name>Slow Food Srl</cbc:Name>
+    </cac:PartyName>
+    <cac:PostalAddress>
+      <cbc:CityName>La Spezia</cbc:CityName>
+      <cac:Country>
+        <cbc:IdentificationCode>IT</cbc:IdentificationCode>
+      </cac:Country>
+    </cac:PostalAddress>
+  </cac:BusinessParty>
+
+  <cac:DigitalProcess>
+    <cbc:ID>D1</cbc:ID>
+    <cac:DigitalCollaboration>
+      <cbc:ID>DC1</cbc:ID>
+
+      <cac:SendingDigitalService>
+        <cbc:ID>Invoice</cbc:ID>
+        <cac:DigitalDocumentMetadata>
+          <cbc:FormatID>UBL</cbc:FormatID>
+          <cbc:VersionID>2.2</cbc:VersionID>
+          <cbc:SchemaURI>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2</cbc:SchemaURI>
+        </cac:DigitalDocumentMetadata>
+        <cac:DigitalDeliveryChannel>
+          <cac:DigitalMessageDelivery>
+            <cbc:ProtocolID>AS2</cbc:ProtocolID>
+            <cbc:EndpointURI>http://as2.papifood.dk</cbc:EndpointURI>
+          </cac:DigitalMessageDelivery>
+        </cac:DigitalDeliveryChannel>
+      </cac:SendingDigitalService>
+
+      <cac:ReceivingDigitalService>
+        <cbc:ID>CreditNote</cbc:ID>
+        <cac:DigitalDocumentMetadata>
+          <cbc:FormatID>UBL</cbc:FormatID>
+          <cbc:VersionID>2.2</cbc:VersionID>
+          <cbc:SchemaURI>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2</cbc:SchemaURI>
+        </cac:DigitalDocumentMetadata>
+        <cac:DigitalDeliveryChannel>
+          <cac:DigitalMessageDelivery>
+            <cbc:ProtocolID>AS2</cbc:ProtocolID>
+            <cbc:EndpointURI>http://as2.papifood.dk</cbc:EndpointURI>
+          </cac:DigitalMessageDelivery>
+        </cac:DigitalDeliveryChannel>
+      </cac:ReceivingDigitalService>
+    </cac:DigitalCollaboration>
+  </cac:DigitalProcess>
+</DigitalCapability>

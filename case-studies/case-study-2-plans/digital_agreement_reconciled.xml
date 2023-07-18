@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DigitalAgreement
+xmlns="urn:oasis:names:specification:ubl:schema:xsd:DigitalAgreement-2"
+xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+    >
+  <cbc:UBLVersionID>2.2</cbc:UBLVersionID>
+  <cbc:ID>A12345-2023</cbc:ID>
+  <cbc:IssueDate>2023-01-07</cbc:IssueDate>
+  <cbc:AgreementTypeCode>Bilateral</cbc:AgreementTypeCode>
+  <cbc:VersionID>1.1</cbc:VersionID>
+  <cbc:PreviousVersionID>1.0</cbc:PreviousVersionID>
+  <cac:ParticipantParty>
+    <cbc:InitiatingPartyIndicator>true</cbc:InitiatingPartyIndicator>
+    <cbc:PrivatePartyIndicator>true</cbc:PrivatePartyIndicator>
+    <cac:Party>
+        <cac:PartyIdentification>
+          <cbc:ID schemeID="DK:CVR">DK12345678</cbc:ID>
+        </cac:PartyIdentification>
+        <cac:PartyName>
+          <cbc:Name>Papirøen Food ApS</cbc:Name>
+        </cac:PartyName>
+        <cac:PostalAddress>
+          <cbc:CityName>Copenhagen</cbc:CityName>
+          <cac:Country>
+            <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+          </cac:Country>
+        </cac:PostalAddress>
+    </cac:Party>
+    <cac:LegalContact>
+      <cbc:Name>John Smith</cbc:Name>
+      <cbc:ElectronicMail>john.smith@papifood.dk</cbc:ElectronicMail>
+    </cac:LegalContact>
+  </cac:ParticipantParty>
+
+  <cac:ParticipantParty>
+    <cbc:InitiatingPartyIndicator>false</cbc:InitiatingPartyIndicator>
+    <cbc:PrivatePartyIndicator>true</cbc:PrivatePartyIndicator>
+    <cac:Party>
+        <cac:PartyIdentification>
+          <cbc:ID schemeID="IT:VAT">IT01234567890</cbc:ID>
+        </cac:PartyIdentification>
+        <cac:PartyName>
+          <cbc:Name>Slow Food Srl</cbc:Name>
+        </cac:PartyName>
+        <cac:PostalAddress>
+          <cbc:CityName>La Spezia</cbc:CityName>
+          <cac:Country>
+            <cbc:IdentificationCode>IT</cbc:IdentificationCode>
+          </cac:Country>
+        </cac:PostalAddress>
+    </cac:Party>
+    <cac:LegalContact>
+      <cbc:Name>Peter Gruen</cbc:Name>
+      <cbc:ElectronicMail>peter.gruen@buyer.it</cbc:ElectronicMail>
+    </cac:LegalContact>
+  </cac:ParticipantParty>
+
+  <cac:AgreementCountry>
+    <cbc:IdentificationCode>IT</cbc:IdentificationCode>
+  </cac:AgreementCountry>
+  <cac:AgreementCountry>
+    <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+  </cac:AgreementCountry>
+
+  <cac:DigitalAgreementTerms>
+    <cbc:Description>Trading Partner Agreement Terms</cbc:Description>
+    <cac:AdoptionPeriod>
+      <cbc:DurationMeasure unitCode="DAY">90</cbc:DurationMeasure>
+    </cac:AdoptionPeriod>
+    <cac:ServiceLevelAgreement>
+      <cbc:ID>SLA1</cbc:ID>
+      <cbc:ServiceTypeCode>AP</cbc:ServiceTypeCode>
+      <cbc:AvailabilityTimePercent>98.5</cbc:AvailabilityTimePercent>
+      <cbc:MinimumResponseTimeDurationMeasure unitCode="SEC">300</cbc:MinimumResponseTimeDurationMeasure>
+      <cbc:MinimumDownTimeScheduleDurationMeasure unitCode="DAY">3</cbc:MinimumDownTimeScheduleDurationMeasure>
+    </cac:ServiceLevelAgreement>
+  </cac:DigitalAgreementTerms>
+
+  <cac:DigitalProcess>
+    <cbc:ID>DP1</cbc:ID>
+    <cac:DigitalCollaboration>
+      <cbc:ID>DC1</cbc:ID>
+      <cac:SendingDigitalService>
+        <cbc:ID>Invoice</cbc:ID>
+        <cac:DigitalDocumentMetadata>
+          <cbc:FormatID>UBL</cbc:FormatID>
+          <cbc:VersionID>2.2</cbc:VersionID>
+          <cbc:SchemaURI>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2</cbc:SchemaURI>
+        </cac:DigitalDocumentMetadata>
+        <cac:DigitalDeliveryChannel>
+          <cac:DigitalMessageDelivery>
+            <cbc:ProtocolID>AS2</cbc:ProtocolID>
+            <cbc:EndpointURI>http://as2.buyer.it</cbc:EndpointURI>
+          </cac:DigitalMessageDelivery>
+        </cac:DigitalDeliveryChannel>
+      </cac:SendingDigitalService>
+      <cac:ReceivingDigitalService>
+        <cbc:ID>CreditNote</cbc:ID>
+        <cac:DigitalDocumentMetadata>
+          <cbc:FormatID>UBL</cbc:FormatID>
+          <cbc:VersionID>2.2</cbc:VersionID>
+          <cbc:SchemaURI>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2</cbc:SchemaURI>
+        </cac:DigitalDocumentMetadata>
+        <cac:DigitalDeliveryChannel>
+          <cac:DigitalMessageDelivery>
+            <cbc:ProtocolID>AS2</cbc:ProtocolID>
+            <cbc:EndpointURI>http://as2.papifood.dk</cbc:EndpointURI>
+          </cac:DigitalMessageDelivery>
+        </cac:DigitalDeliveryChannel>
+      </cac:ReceivingDigitalService>
+    </cac:DigitalCollaboration>
+  </cac:DigitalProcess>
+</DigitalAgreement>
