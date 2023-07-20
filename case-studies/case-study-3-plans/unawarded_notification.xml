@@ -1,0 +1,21 @@
+<UnawardedNotification xmlns="urn:oasis:names:specification:ubl:schema:xsd:UnawardedNotification-2"
+    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+    <cbc:ID>N-001</cbc:ID>
+    <cbc:ContractFolderID>C-002</cbc:ContractFolderID>
+    <cbc:IssueDate>2023-04-02</cbc:IssueDate>
+    <cbc:ContractName>UVA Thesis Work</cbc:ContractName>
+    <cac:SenderParty>
+        <cbc:WebsiteURI>https://www.unido.org</cbc:WebsiteURI>
+    </cac:SenderParty>
+    <cac:ReceiverParty>
+        <cbc:WebsiteURI>https://tenderer-example.com</cbc:WebsiteURI>
+    </cac:ReceiverParty>
+    <cac:TenderResult>
+        <cbc:AwardDate>2023-04-02</cbc:AwardDate>
+    </cac:TenderResult>
+    <cac:Signature>
+        <cbc:ID>0040623M</cbc:ID>
+    </cac:Signature>
+    <!--     <cac:AppealTerms></cac:AppealTerms> -->
+</UnawardedNotification>

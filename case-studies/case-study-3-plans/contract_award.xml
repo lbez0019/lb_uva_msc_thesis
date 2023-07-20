@@ -14,7 +14,7 @@
         </cac:Party>
     </cac:ContractingParty>
     <cac:ReceiverParty>
-        <cbc:WebsiteURI>https://lukebezzina.com</cbc:WebsiteURI>
+        <cbc:WebsiteURI>https://tenderer-example.com</cbc:WebsiteURI>
     </cac:ReceiverParty>
     <cac:TenderResult>
         <cbc:AwardDate>2023-04-02</cbc:AwardDate>

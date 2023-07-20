@@ -5,12 +5,12 @@ xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponent
 xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
     >
   <cbc:UBLVersionID>2.2</cbc:UBLVersionID>
-  <cbc:ID>A12345-2023</cbc:ID>
-  <cbc:IssueDate>2023-01-07</cbc:IssueDate>
+  <cbc:ID>A12346-2023</cbc:ID>
+  <cbc:IssueDate>2023-01-08</cbc:IssueDate>
   <cbc:AgreementTypeCode>Bilateral</cbc:AgreementTypeCode>
   <cbc:VersionID>1.1</cbc:VersionID>
   <cbc:PreviousVersionID>1.0</cbc:PreviousVersionID>
-  <cac:ParticipantParty>
+  <cac:SenderParty>
     <cbc:InitiatingPartyIndicator>true</cbc:InitiatingPartyIndicator>
     <cbc:PrivatePartyIndicator>true</cbc:PrivatePartyIndicator>
     <cac:Party>
@@ -27,13 +27,9 @@ xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
           </cac:Country>
         </cac:PostalAddress>
     </cac:Party>
-    <cac:LegalContact>
-      <cbc:Name>John Smith</cbc:Name>
-      <cbc:ElectronicMail>john.smith@papifood.dk</cbc:ElectronicMail>
-    </cac:LegalContact>
-  </cac:ParticipantParty>
+  </cac:SenderParty>
 
-  <cac:ParticipantParty>
+  <cac:ReceiverParty>
     <cbc:InitiatingPartyIndicator>false</cbc:InitiatingPartyIndicator>
     <cbc:PrivatePartyIndicator>true</cbc:PrivatePartyIndicator>
     <cac:Party>
@@ -50,23 +46,15 @@ xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
           </cac:Country>
         </cac:PostalAddress>
     </cac:Party>
-    <cac:LegalContact>
-      <cbc:Name>Peter Gruen</cbc:Name>
-      <cbc:ElectronicMail>peter.gruen@buyer.it</cbc:ElectronicMail>
-    </cac:LegalContact>
-  </cac:ParticipantParty>
+  </cac:ReceiverParty>
 
   <cac:AgreementCountry>
     <cbc:IdentificationCode>IT</cbc:IdentificationCode>
   </cac:AgreementCountry>
-  <cac:AgreementCountry>
-    <cbc:IdentificationCode>DK</cbc:IdentificationCode>
-  </cac:AgreementCountry>
 
   <cac:DigitalAgreementTerms>
-    <cbc:Description>Trading Partner Agreement Terms</cbc:Description>
     <cac:AdoptionPeriod>
-      <cbc:DurationMeasure unitCode="DAY">90</cbc:DurationMeasure>
+      <cbc:DurationMeasure unitCode="DAY">120</cbc:DurationMeasure>
     </cac:AdoptionPeriod>
     <cac:ServiceLevelAgreement>
       <cbc:ID>SLA1</cbc:ID>
@@ -86,7 +74,6 @@ xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
         <cac:DigitalDocumentMetadata>
           <cbc:FormatID>UBL</cbc:FormatID>
           <cbc:VersionID>2.2</cbc:VersionID>
-          <cbc:SchemaURI>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2</cbc:SchemaURI>
         </cac:DigitalDocumentMetadata>
         <cac:DigitalDeliveryChannel>
           <cac:DigitalMessageDelivery>
@@ -100,7 +87,6 @@ xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
         <cac:DigitalDocumentMetadata>
           <cbc:FormatID>UBL</cbc:FormatID>
           <cbc:VersionID>2.2</cbc:VersionID>
-          <cbc:SchemaURI>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2</cbc:SchemaURI>
         </cac:DigitalDocumentMetadata>
         <cac:DigitalDeliveryChannel>
           <cac:DigitalMessageDelivery>

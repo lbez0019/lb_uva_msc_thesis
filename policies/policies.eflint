@@ -1,4 +1,4 @@
-Fact documents_added Identified by "awarded_notification", "unawarded_notification", "contract_award", "tender"
+Fact documents_added Identified by "awardednotification", "unawardednotification", "contractaward", "tender"
 Fact awardednotification_awarddate Identified by String
 Fact awardednotification_contractfolderid Identified by String
 Fact awardednotification_contractname Identified by String
@@ -14,9 +14,10 @@ Fact contractawardnotice_buyerprofileuri Identified by String
 Fact contractawardnotice_contractfolderid Identified by String
 Fact contractawardnotice_id Identified by String
 Fact contractawardnotice_issuedate Identified by String
-Fact contractawardnotice_websiteuri Identified by String
+Fact contractawardnotice_websiteuri Identified by "https://lukebezzina.com", "https://www.unido.org"
 Fact contractawardnotice_contractingparty Identified by  contractawardnotice_buyerprofileuri
 Fact contractawardnotice_contractingparty_party Identified by  contractawardnotice_websiteuri
+Fact contractawardnotice_receiverparty Identified by  contractawardnotice_websiteuri
 Fact contractawardnotice_signature Identified by  contractawardnotice_id
 Fact contractawardnotice_tenderresult Identified by  contractawardnotice_awarddate
 Fact tender_buyerprofileuri Identified by String
@@ -42,25 +43,27 @@ Fact unawardednotification_senderparty Identified by  unawardednotification_webs
 Fact unawardednotification_signature Identified by  unawardednotification_id
 Fact unawardednotification_tenderresult Identified by  unawardednotification_awarddate
 
-Bool tender_submitted.
-Bool tender_received.
-Bool awarded_notification.
-Bool unawarded_notification.
-Bool notification_received.
+Bool contract_awarded.
 
+Act receive_contract_award
+    Actor tender_websiteuri
+    Recipient contractawardnotice_receiverparty
+    Conditioned by awardednotification_receiverparty(tender_websiteuri) && contractawardnotice_receiverparty && contractawardnotice_receiverparty.contractawardnotice_websiteuri != tender_websiteuri
+    Creates contract_awarded.
 
 //  Holds when send_awarded_notification(awardednotification_senderparty, awardednotification_receiverparty) || send_unawarded_notification(unawardednotification_senderparty, unawardednotification_receiverparty)
 //  Holds when unawarded_notification || awarded_notification
 //     Holds when ( unawarded_notification && Not ( awarded_notification ) ) || ( Not ( unawarded_notification ) && awarded_notification )
+
 Act receive_notification
     Actor tender_websiteuri
     Conditioned by unawardednotification_receiverparty(tender_websiteuri) || awardednotification_receiverparty(tender_websiteuri)
-    Creates notification_received.
+    Creates receive_contract_award(tender_websiteuri, contractawardnotice_receiverparty) Where Holds contractawardnotice_receiverparty.
 
 Act send_unawarded_notification
     Actor unawardednotification_senderparty
     Recipient unawardednotification_receiverparty
-    Conditioned by unawardednotification_senderparty && Not(unawardednotification_receiverparty) && (unawardednotification_contractfolderid == tender_contractfolderid)
+    Conditioned by unawardednotification_senderparty && unawardednotification_receiverparty && Not(documents_added("awardednotification")) && (unawardednotification_contractfolderid == tender_contractfolderid)
     Creates receive_notification (tender_websiteuri) Where Holds(unawardednotification_receiverparty(tender_websiteuri)).
 
 Act send_awarded_notification
@@ -85,4 +88,4 @@ Act submit_tender_documents
 Extend Act send_awarded_notification Terminates receive_tender_documents (tender_contractingparty_party).
 Extend Act send_unawarded_notification Terminates receive_tender_documents (tender_contractingparty_party).
 Extend Act receive_notification Terminates send_awarded_notification (awardednotification_senderparty, awardednotification_receiverparty), send_unawarded_notification (unawardednotification_senderparty, unawardednotification_receiverparty).
-
+Extend Act receive_contract_award Terminates receive_notification (tender_websiteuri).

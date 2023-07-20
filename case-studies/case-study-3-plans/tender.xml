@@ -1,0 +1,57 @@
+<Tender xmlns="urn:oasis:names:specification:ubl:schema:xsd:Tender-2"
+    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+
+    <cbc:ID>T-001</cbc:ID>
+    <cbc:ContractFolderID>C-001</cbc:ContractFolderID>
+    <cbc:IssueDate>2023-04-01</cbc:IssueDate>
+    <cbc:ContractName>UVA Thesis Work</cbc:ContractName>
+
+    <cac:Signature>
+        <cbc:ID>0101010L</cbc:ID>
+    </cac:Signature>
+    <cac:TendererParty>
+        <cbc:WebsiteURI>https://tenderer-example.com</cbc:WebsiteURI>
+    </cac:TendererParty>
+    <cac:ContractingParty>
+        <cbc:BuyerProfileURI>https://www.unido.org/get-involved-procurement/procurement-opportunities</cbc:BuyerProfileURI>
+        <cac:Party>
+            <cbc:WebsiteURI>https://www.unido.org</cbc:WebsiteURI>
+        </cac:Party>
+        <!-- <cac:ContractingActivity>
+            <cbc:ActivityType>Academic</cbc:ActivityType>
+        </cac:ContractingActivity> -->
+    </cac:ContractingParty>
+    <cac:TenderedProject>
+        <cbc:FeeAmount currencyID="EUR">500</cbc:FeeAmount>
+    </cac:TenderedProject>
+</Tender>
+
+<!--
+    <xsd:element ref="ext:UBLExtensions" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:UBLVersionID" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:CustomizationID" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:ProfileID" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:ProfileExecutionID" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:ID" minOccurs="1" maxOccurs="1" />
+    <xsd:element ref="cbc:CopyIndicator" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:UUID" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:TenderTypeCode" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:ContractFolderID" minOccurs="1" maxOccurs="1" />
+    <xsd:element ref="cbc:IssueDate" minOccurs="1" maxOccurs="1" />
+    <xsd:element ref="cbc:IssueTime" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cbc:ContractName" minOccurs="0" maxOccurs="unbounded" />
+    <xsd:element ref="cbc:Note" minOccurs="0" maxOccurs="unbounded" />
+    <xsd:element ref="cac:ValidityPeriod" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cac:CallForTenderDocumentReference"
+    minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cac:DocumentReference" minOccurs="0" maxOccurs="unbounded" />
+    <xsd:element ref="cac:Signature" minOccurs="0" maxOccurs="unbounded" />
+    <xsd:element ref="cac:TendererParty" minOccurs="1" maxOccurs="unbounded" />
+    <xsd:element ref="cac:TendererQualificationDocumentReference" minOccurs="0"
+        maxOccurs="1" />
+    <xsd:element ref="cac:SubcontractorParty" minOccurs="0" maxOccurs="unbounded" />
+    <xsd:element ref="cac:ContractingParty" minOccurs="0" maxOccurs="unbounded" />
+    <xsd:element ref="cac:OriginatorCustomerParty" minOccurs="0" maxOccurs="1" />
+    <xsd:element ref="cac:TenderedProject" minOccurs="1" maxOccurs="unbounded" />
+-->
