@@ -10,7 +10,7 @@ xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
   <cbc:AgreementTypeCode>Bilateral</cbc:AgreementTypeCode>
   <cbc:VersionID>1.1</cbc:VersionID>
   <cbc:PreviousVersionID>1.0</cbc:PreviousVersionID>
-  <cac:SenderParty>
+  <cac:ParticipantParty>
     <cbc:InitiatingPartyIndicator>true</cbc:InitiatingPartyIndicator>
     <cbc:PrivatePartyIndicator>true</cbc:PrivatePartyIndicator>
     <cac:Party>
@@ -27,9 +27,9 @@ xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
           </cac:Country>
         </cac:PostalAddress>
     </cac:Party>
-  </cac:SenderParty>
+  </cac:ParticipantParty>
 
-  <cac:ReceiverParty>
+  <cac:ParticipantParty>
     <cbc:InitiatingPartyIndicator>false</cbc:InitiatingPartyIndicator>
     <cbc:PrivatePartyIndicator>true</cbc:PrivatePartyIndicator>
     <cac:Party>
@@ -46,13 +46,14 @@ xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
           </cac:Country>
         </cac:PostalAddress>
     </cac:Party>
-  </cac:ReceiverParty>
+  </cac:ParticipantParty>
 
   <cac:AgreementCountry>
     <cbc:IdentificationCode>IT</cbc:IdentificationCode>
   </cac:AgreementCountry>
 
   <cac:DigitalAgreementTerms>
+    <cbc:Description>Sample Digital Agreement</cbc:Description>
     <cac:AdoptionPeriod>
       <cbc:DurationMeasure unitCode="DAY">120</cbc:DurationMeasure>
     </cac:AdoptionPeriod>

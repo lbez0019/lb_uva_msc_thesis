@@ -1,11 +1,27 @@
 Fact documents_added Identified by "applicationresponse", "exportcustomsdeclaration", "exportcustomsdeclaration_two".
 Fact applicationresponse_companyid Identified by Int.
-Fact applicationresponse_description Identified by String.
+Fact applicationresponse_description Identified by "Approved", "Rejected".
 Fact applicationresponse_id Identified by "A8596", "A8597", "A8598", "A8599", "A8600", "DK003100", "DK003101", "DK003102", "D00001"
 Fact applicationresponse_identificationcode Identified by String.
 Fact applicationresponse_issuedate Identified by String.
 Fact applicationresponse_postalzone Identified by Int.
 Fact applicationresponse_responsecode Identified by 0, 1.
+Fact exportcustomsdeclaration_companyid Identified by Int.
+Fact exportcustomsdeclaration_id Identified by "A8596", "A8597", "A8598", "A8599", "A8600", "DK003100", "DK003101", "DK003102".
+Fact exportcustomsdeclaration_identificationcode Identified by String.
+Fact exportcustomsdeclaration_issuedate Identified by String.
+Fact exportcustomsdeclaration_netweightmeasure Identified by String.
+Fact exportcustomsdeclaration_postalzone Identified by Int.
+Fact exportcustomsdeclaration_totalinvoiceamount Identified by String.
+Fact exportcustomsdeclaration_websiteuri Identified by String.
+Fact exportcustomsdeclaration_two_companyid Identified by Int.
+Fact exportcustomsdeclaration_two_id Identified by "A8596", "A8597", "A8598", "A8599", "A8600", "DK003100", "DK003101", "DK003102", "S234664".
+Fact exportcustomsdeclaration_two_identificationcode Identified by String.
+Fact exportcustomsdeclaration_two_issuedate Identified by String.
+Fact exportcustomsdeclaration_two_netweightmeasure Identified by String.
+Fact exportcustomsdeclaration_two_postalzone Identified by Int.
+Fact exportcustomsdeclaration_two_totalinvoiceamount Identified by String.
+Fact exportcustomsdeclaration_two_websiteuri Identified by String.
 Fact applicationresponse_documentresponse_documentreference Identified by  applicationresponse_id .
 Fact applicationresponse_documentresponse_response Identified by  applicationresponse_description * applicationresponse_responsecode .
 Fact applicationresponse_receiverparty_partyidentification Identified by  applicationresponse_id .
@@ -15,14 +31,6 @@ Fact applicationresponse_receiverparty_postaladdress_country Identified by  appl
 Fact applicationresponse_senderparty_partyidentification Identified by  applicationresponse_id .
 Fact applicationresponse_senderparty_postaladdress Identified by  applicationresponse_postalzone .
 Fact applicationresponse_senderparty_postaladdress_country Identified by  applicationresponse_identificationcode .
-Fact exportcustomsdeclaration_companyid Identified by Int.
-Fact exportcustomsdeclaration_id Identified by "A8596", "A8597", "A8598", "A8599", "A8600", "DK003100", "DK003101", "DK003102".
-Fact exportcustomsdeclaration_identificationcode Identified by String.
-Fact exportcustomsdeclaration_issuedate Identified by String.
-Fact exportcustomsdeclaration_netweightmeasure Identified by String.
-Fact exportcustomsdeclaration_postalzone Identified by Int.
-Fact exportcustomsdeclaration_totalinvoiceamount Identified by String.
-Fact exportcustomsdeclaration_websiteuri Identified by String.
 Fact exportcustomsdeclaration_customsdeclaration Identified by  exportcustomsdeclaration_id .
 Fact exportcustomsdeclaration_customsdeclaration_additionaldocumentreference Identified by  exportcustomsdeclaration_id .
 Fact exportcustomsdeclaration_customsdeclaration_consigneeparty_partyidentification Identified by  exportcustomsdeclaration_id .
@@ -43,14 +51,6 @@ Fact exportcustomsdeclaration_exporterparty_partyidentification Identified by  e
 Fact exportcustomsdeclaration_exporterparty_partylegalentity Identified by  exportcustomsdeclaration_companyid .
 Fact exportcustomsdeclaration_exporterparty_postaladdress Identified by  exportcustomsdeclaration_postalzone .
 Fact exportcustomsdeclaration_exporterparty_postaladdress_country Identified by  exportcustomsdeclaration_identificationcode .
-Fact exportcustomsdeclaration_two_companyid Identified by Int.
-Fact exportcustomsdeclaration_two_id Identified by "A8596", "A8597", "A8598", "A8599", "A8600", "DK003100", "DK003101", "DK003102", "S234664".
-Fact exportcustomsdeclaration_two_identificationcode Identified by String.
-Fact exportcustomsdeclaration_two_issuedate Identified by String.
-Fact exportcustomsdeclaration_two_netweightmeasure Identified by String.
-Fact exportcustomsdeclaration_two_postalzone Identified by Int.
-Fact exportcustomsdeclaration_two_totalinvoiceamount Identified by String.
-Fact exportcustomsdeclaration_two_websiteuri Identified by String.
 Fact exportcustomsdeclaration_two_customsdeclaration Identified by  exportcustomsdeclaration_two_id .
 Fact exportcustomsdeclaration_two_customsdeclaration_additionaldocumentreference Identified by  exportcustomsdeclaration_two_id .
 Fact exportcustomsdeclaration_two_customsdeclaration_consigneeparty_partyidentification Identified by  exportcustomsdeclaration_two_id .
@@ -86,14 +86,15 @@ Bool customs_declaration_complete.
 
 Act receive_reject
     Actor exportcustomsdeclaration_exporterparty_partyidentification
-    Conditioned by applicationresponse_documentresponse_response.applicationresponse_responsecode == 0 && applicationresponse_receiverparty_partyidentification.applicationresponse_id == exportcustomsdeclaration_exporterparty_partyidentification.exportcustomsdeclaration_id
+    Recipient applicationresponse_documentresponse_response
+    Conditioned by documents_added("applicationresponse") && applicationresponse_documentresponse_response.applicationresponse_description == "Rejected" && applicationresponse_documentresponse_response.applicationresponse_responsecode == 0 && applicationresponse_receiverparty_partyidentification.applicationresponse_id == exportcustomsdeclaration_exporterparty_partyidentification.exportcustomsdeclaration_id
     Creates customs_declaration_complete.
 
 Act send_reject
     Actor exportcustomsdeclaration_customsdeclaration_customsparty_partyidentification
     Recipient exportcustomsdeclaration_exporterparty_partyidentification
     Conditioned by exportcustomsdeclaration_customsdeclaration_customsparty_partyidentification
-    Creates receive_reject (exportcustomsdeclaration_exporterparty_partyidentification) Where Holds exportcustomsdeclaration_exporterparty_partyidentification.
+    Creates receive_reject (exportcustomsdeclaration_exporterparty_partyidentification, applicationresponse_documentresponse_response) Where Holds exportcustomsdeclaration_exporterparty_partyidentification && Holds applicationresponse_documentresponse_response.
 
 Act receive_export_customs_declaration
     Actor exportcustomsdeclaration_two_signature_signatoryparty_partyidentification

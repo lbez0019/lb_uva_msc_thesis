@@ -46,23 +46,22 @@ Fact unawardednotification_tenderresult Identified by  unawardednotification_awa
 Bool contract_awarded.
 
 Act receive_contract_award
-    Actor awardednotification_receiverparty
-    Recipient contractawardnotice_receiverparty
-    Conditioned by awardednotification_receiverparty && contractawardnotice_receiverparty && contractawardnotice_receiverparty.contractawardnotice_websiteuri != awardednotification_receiverparty.awardednotification_websiteuri
+    Actor contractawardnotice_receiverparty
+    Conditioned by contractawardnotice_receiverparty && awardednotification_receiverparty(contractawardnotice_receiverparty.contractawardnotice_websiteuri) && (documents_added("awardednotification"))
     Creates contract_awarded.
-//     Conditioned by awardednotification_receiverparty && contractawardnotice_receiverparty && contractawardnotice_receiverparty.contractawardnotice_websiteuri == awardednotification_receiverparty.awardednotification_websiteuri
+//    Conditioned by awardednotification_receiverparty(tender_websiteuri) && contractawardnotice_receiverparty && contractawardnotice_receiverparty.contractawardnotice_websiteuri == tender_websiteuri
 
 Act receive_notification
     Actor tender_websiteuri
     Conditioned by unawardednotification_receiverparty(tender_websiteuri) || awardednotification_receiverparty(tender_websiteuri)
-    Creates receive_contract_award(awardednotification_receiverparty, contractawardnotice_receiverparty) Where Holds contractawardnotice_receiverparty && Holds awardednotification_receiverparty.
+    Creates receive_contract_award(contractawardnotice_receiverparty) Where Holds contractawardnotice_receiverparty.
 
 Act send_unawarded_notification
     Actor unawardednotification_senderparty
     Recipient unawardednotification_receiverparty
     Conditioned by unawardednotification_senderparty && unawardednotification_receiverparty && Not(documents_added("awardednotification")) && (unawardednotification_contractfolderid == tender_contractfolderid)
     Creates receive_notification (tender_websiteuri) Where Holds(unawardednotification_receiverparty(tender_websiteuri)).
-
+//
 Act send_awarded_notification
     Actor awardednotification_senderparty
     Recipient awardednotification_receiverparty

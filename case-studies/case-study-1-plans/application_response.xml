@@ -32,8 +32,8 @@
 	</cac:ReceiverParty>
 	<cac:DocumentResponse>
         <cac:Response>
-            <cbc:ResponseCode>0</cbc:ResponseCode>
-            <cbc:Description>Rejected</cbc:Description>
+            <cbc:ResponseCode>1</cbc:ResponseCode>
+            <cbc:Description>Approved</cbc:Description>
         </cac:Response>
         <cac:DocumentReference>
             <cbc:ID>D00001</cbc:ID>
