@@ -1,3 +1,0 @@
-Fact test_one Identified by String.
-Fact test_two Identified by String.
-Fact test_onetwo Identified by test_one * test_two.

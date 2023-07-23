@@ -1,8 +1,17 @@
 import xml.sax
 
+import inflect
+
 
 class UBLHandler(xml.sax.ContentHandler):
     def __init__(self):
+        self.document_name, self.current_element = "", ""
+        self.basic_element_add_flag = False
+        self.aggregate_component_stack, self.parsed_aggregate_components, self.parsed_documents = [], [], []
+        self.facts = set()
+        self.composite_components, self.fact_values = {}, {}
+
+    def reset_values(self):
         self.document_name, self.current_element = "", ""
         self.basic_element_add_flag = False
         self.aggregate_component_stack, self.parsed_aggregate_components = [], []
@@ -25,7 +34,12 @@ class UBLHandler(xml.sax.ContentHandler):
     def characters(self, content):
         # First Element in UBL == Document Name
         if self.document_name == "":
+            p = inflect.engine()
+            self.parsed_documents.append(self.current_element.lower())
             self.document_name = self.current_element.lower()
+            document_count = self.parsed_documents.count(self.current_element.lower())
+            if document_count > 1:
+                self.document_name += f"_{p.number_to_words(document_count)}"
             self.fact_values["documents_added"] = [[["documents_added", self.document_name]]]
 
         # Aggregate (composite) component parsed
@@ -63,7 +77,6 @@ class UBLHandler(xml.sax.ContentHandler):
             fact_name = f'{self.document_name}_{(self.current_element.split(":")[1]).lower()}'
 
             # Individual Fact Type declarations
-            # if fact_value.isdigit() or (fact_value.startswith('-') and fact_value[1:].isdigit()):
             if fact_value.isdigit():
                 self.facts.add(f'Fact {fact_name} Identified by Int.')
                 fact_value = int(fact_value)
@@ -80,5 +93,4 @@ class UBLHandler(xml.sax.ContentHandler):
                 self.composite_components[val][-1].append([fact_name, fact_value])
 
             else:
-                # self.fact_values.append(f'+{fact_name}({fact_value}).')
                 self.fact_values[fact_name] = [[[fact_name, fact_value]]]

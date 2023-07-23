@@ -23,29 +23,47 @@ class DAGBuilder:
 
         return graph
 
-    def build_graph(self, items):
-        dependency_graph = self.build_dependency_graph(items)
-
-        return dependency_graph
 
     @staticmethod
     def display_valid_scenario(graph, scenario):
-        node_colors = {node: 'lightblue' for node in graph.nodes()}
+        # TODO: ADD EDGE COLOURS
+        node_colours = {node: 'lightblue' for node in graph.nodes()}
+        edge_colours = []
+        edge_traversals = scenario
         last_action = ""
         for action in scenario:
-            node_colors[action] = 'lightgreen'
             last_action = action
+
         final_nodes = graph.successors(last_action)
         for node in final_nodes:
-            node_colors[node] = 'lightgreen'
-        DAGBuilder.visualise_graph(graph, node_colors)
+            node_colours[node] = 'lightgreen'
+            edge_traversals.append(node)
+
+        for edge in graph.edges:
+            origin, destination = edge
+
+            if origin in edge_traversals and destination in edge_traversals:
+                edge_colours.append('lightgreen')
+            else:
+                edge_colours.append('gray')
+        DAGBuilder.visualise_graph(graph, node_colours, edge_colours)
 
     @staticmethod
     def display_invalid_scenario(graph, scenario):
-        node_colors = {node: 'lightblue' for node in graph.nodes()}
-        for action in scenario:
-            node_colors[action] = 'red'
-        DAGBuilder.visualise_graph(graph, node_colors)
+        node_colours = {node: 'lightblue' for node in graph.nodes()}
+        node_colours[scenario[1]] = 'red'
+        edge_traversals = scenario[0][:(scenario[0].index(scenario[1]) + 1)]
+
+        edge_colours = []
+        for edge in graph.edges:
+            origin, destination = edge
+
+            if origin in edge_traversals and destination in edge_traversals:
+                edge_colours.append('red')
+            else:
+                edge_colours.append('gray')
+
+        DAGBuilder.visualise_graph(graph, node_colours, edge_colours)
 
     @staticmethod
     def get_action_from_edge(graph, node, successor):
@@ -67,43 +85,12 @@ class DAGBuilder:
 
         return stack.pop()
 
-    def topological_sort(self, dependency_graph):
-        # Perform topological sorting to generate valid scenarios
-        scenarios = []
-
-        # Find all nodes without incoming edges (sources)
-        sources = [node for node in dependency_graph.nodes if dependency_graph.in_degree(node) == 0]
-
-        # Generate scenarios starting from each source node
-        for source in sources:
-            stack = [(source, [source])]
-            action_stack = []
-
-            while stack:
-                action_path = []
-                if action_stack:
-                    init_act, action_path = action_stack.pop()
-                node, path = stack.pop()
-
-                successors = list(dependency_graph.successors(node))
-
-                if successors:
-                    for successor in successors:
-                        action = self.get_action_from_edge(dependency_graph, node, successor)
-
-                        new_action_path = action_path + [action]
-                        new_path = path + [successor]
-                        action_stack.append((action, new_action_path))
-                        stack.append((successor, new_path))
-                else:
-                    scenarios.append(action_path)
-
-        return scenarios
-
     @staticmethod
-    def visualise_graph(dependency_graph, node_colours):
+    def visualise_graph(dependency_graph, node_colours, edge_colours):
         pos = nx.shell_layout(dependency_graph)
-        plt.figure(figsize=(12, 12))
+        plt.figure(figsize=(12, 11))
+
+        labels = {node: node for node in dependency_graph.nodes}
 
         edge_labels = {}
         for u, v, attrs in dependency_graph.edges(data=True):
@@ -111,11 +98,17 @@ class DAGBuilder:
                 edge_labels[(u, v)] = attrs["action"]
 
         nx.draw_networkx(dependency_graph, pos, with_labels=False, node_color=list(node_colours.values()),
-                         node_size=1200, font_size=12, arrowsize=30, edge_color='gray')
-        nx.draw_networkx_edge_labels(dependency_graph, pos=pos, edge_labels=edge_labels, font_size=9)
+                         node_size=1200, arrowsize=30, edge_color=edge_colours, width=2.0)
 
-        plt.title("Directed Graph Visualization")
+        label_pos = {k: (v[0], v[1] - 0.09) for k, v in pos.items()}  # Adjust the y-coordinate for the labels
+        nx.draw_networkx_labels(dependency_graph, pos=label_pos, labels=labels, font_size=16, font_color='black',
+                                verticalalignment='center')
+
+        plt.title("Directed Graph Visualization", fontsize=18)  # Set the font size of the title
         plt.axis("off")
+        plt.margins(0.2)
+        plt.tight_layout()
+
         plt.show()
 
         return dependency_graph

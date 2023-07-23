@@ -41,6 +41,7 @@ class EFLINTCommunicator:
     @staticmethod
     def check_transition_validity(instance, act, actor, recipient, query_op):
         phrase = f"?{query_op}({act}({actor}"
+        print(act)
         phrase += f", {', '.join(recipient)}" if recipient else ""
         phrase += f")) Where Holds({actor})"
         if recipient:
@@ -58,29 +59,32 @@ class EFLINTCommunicator:
         values = [[item[0], f'"{item[1]}"'] if isinstance(item[1], str) else item for item in values]
         payload = FactGenerator.define_fact_payload(value_count, uuid, fact, values)
 
-        while True:
-            try:
-                response = requests.post(url, payload)
-                if response.status_code == 200:
-                    errors = response.json()["data"]["response"]["errors"]
-                    if errors:
-                        print("Error during fact creation:", errors[0])
-                        return 0
-                    return 1
-                print("Error. Response Status Code:", response.status_code)
-                return 0
+        if len(values) > 0:
+            while True:
+                try:
+                    response = requests.post(url, payload)
+                    if response.status_code == 200:
+                        errors = response.json()["data"]["response"]["errors"]
+                        if errors:
+                            print("Error during fact creation:", errors[0])
+                            return 0
+                        return 1
+                    print("Error. Response Status Code:", response.status_code)
+                    return 0
 
-            except requests.exceptions.RequestException as e:
-                print("Request Error:", e)
-                return 0
-            except Exception:
-                print(f"eFLINT instance instantiating...")
-            time.sleep(0.5)
+                except requests.exceptions.RequestException as e:
+                    print("Request Error:", e)
+                    return 0
+                except Exception:
+                    print(f"eFLINT instance instantiating...")
+                time.sleep(0.5)
+        else:
+            return 0
 
     @staticmethod
-    def create_instance():
+    def create_instance(policies_path):
         url = "http://localhost:8080/upload"
-        file_path = './policies/policies.eflint'  # Replace with the path to your file
+        file_path = f"{policies_path}"  # Replace with the path to your file
 
         try:
             with open(file_path, 'rb') as file:
@@ -98,10 +102,10 @@ class EFLINTCommunicator:
             print(e)
 
     @staticmethod
-    def eflint_initiate(eflint_facts, eflint_fact_values):
-        # write_eflint_template(eflint_facts)
+    def eflint_initiate(eflint_facts, eflint_fact_values, policies_path):
+        # write_eflint_template(eflint_facts, plans_path)
         EFLINTCommunicator.web_server_check()
-        instance_created = EFLINTCommunicator.create_instance()
+        instance_created = EFLINTCommunicator.create_instance(policies_path)
 
         if instance_created is not None:
             for key, value in eflint_fact_values.items():
@@ -139,8 +143,8 @@ class EFLINTCommunicator:
         return EFLINTCommunicator.eflint_server_request(instance, phrase)
 
     @staticmethod
-    def write_eflint_template(fact_types):
-        with open('./policies/policies.eflint', 'w') as f:
+    def write_eflint_template(fact_types, plans_path):
+        with open(f"{plans_path}/policies.eflint", 'w') as f:
             for fact_type in fact_types:
                 f.write(f"{fact_type}\n")
 

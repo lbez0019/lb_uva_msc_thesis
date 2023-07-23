@@ -11,7 +11,6 @@ class ScenarioHandler:
     def categorise_all_scenarios_with_graph(instance, action_list):
         valid_scenarios = []
         invalid_scenarios = []
-        invalid_scenarios_summarised = []
         dependency_graph, all_scenarios = ScenarioHandler.retrieve_all_scenarios(action_list)
 
         for scenario in all_scenarios:
@@ -37,10 +36,9 @@ class ScenarioHandler:
             if valid_bool:
                 valid_scenarios.append(scenario)
             else:
-                invalid_scenarios_summarised.append(scenario)
                 invalid_scenarios.append([scenario, violating_transition])
 
-        return valid_scenarios, invalid_scenarios, invalid_scenarios_summarised, dependency_graph
+        return valid_scenarios, invalid_scenarios, dependency_graph
 
     @staticmethod
     def retrieve_all_scenarios(action_list):
@@ -53,9 +51,9 @@ class ScenarioHandler:
             items[act] = {'Act': act, 'Creates': creates}
 
         dag_builder = DAGBuilder()
-        dependency_graph = dag_builder.build_graph(items)
+        dependency_graph = dag_builder.build_dependency_graph(items)
 
-        scenarios = dag_builder.topological_sort(dependency_graph)
+        scenarios = ScenarioHandler.topological_sort(dependency_graph)
 
         return dependency_graph, scenarios
 
@@ -76,7 +74,7 @@ class ScenarioHandler:
                 left_side = sides[0].strip("()")
                 right_side = sides[1].strip("()")
                 print(
-                    f"Make sure that \033[1m{left_side}\033[0m is"
+                    f"- Make sure that \033[1m{left_side}\033[0m is"
                     f" \033[1m{operator}\033[0m than/to \033[1m{right_side}\033[0m")
                 break
 
@@ -84,16 +82,31 @@ class ScenarioHandler:
             if "Not" in string:
                 _, _, substring = string.partition("Not")
                 substring = substring.strip("()")
-                print(
-                    f"Item \033[1m{substring}\033[0m should not hold. "
-                    f"Remove instantiation of fact by deleting the respective "
-                    f"value for \033[1m{substring}\033[0m from the UBL files added.")
+                if "documents_added" in substring:
+                    substring = substring.replace("documents_added(", "")
+                    print (
+                        f"- Document \033[1m{substring}\033[0m should not be submitted. "
+                        f"Remove \033[1m{substring}\033[0m from the UBL files added."
+                    )
+                else:
+                    print(
+                        f"- Item \033[1m{substring}\033[0m should not hold. "
+                        f"Remove instantiation of fact by deleting the respective "
+                        f"value for \033[1m{substring}\033[0m from the UBL files added."
+                    )
             else:
                 string = string.strip("()")
-                print(
-                    f"Item \033[1m{string}\033[0m should hold. "
-                    f"Make sure that you add the required values for "
-                    f"fact \033[1m{string}\033[0m in the UBL files added.")
+                if "documents_added" in string:
+                    string = string.replace("documents_added(", "")
+                    print (
+                        f"- Document \033[1m{string}\033[0m should be submitted. "
+                        f"Make sure to add \033[1m{string}\033[0m to the UBL files submitted."
+                    )
+                else:
+                    print(
+                        f"- Item \033[1m{string}\033[0m should hold. "
+                        f"Make sure that you add the required values for "
+                        f"fact \033[1m{string}\033[0m in the UBL files added, and that the value satisfies the condition.")
 
     @staticmethod
     def process_scenario_choice(action_parser, instance_created, user_input, action_list, similar_scenarios, invalid_scenarios, graph):
@@ -107,7 +120,7 @@ class ScenarioHandler:
             else:
                 for invalid_scenario in invalid_scenarios:
                     if invalid_scenario[0] == selected_similar_scenario:
-                        DAGBuilder.display_invalid_scenario(graph, selected_similar_scenario)
+                        DAGBuilder.display_invalid_scenario(graph, invalid_scenario)
                         ScenarioHandler.invoke_alternative_action(action_parser, instance_created, invalid_scenario)
 
     @staticmethod
@@ -129,7 +142,7 @@ class ScenarioHandler:
                         precondition = precondition_permutations[i]
                         precondition_string = action_parser.rpn_to_infix(precondition)
                         number_string = p.number_to_words(i)
-                        alt_name = f'{transition}_alt{number_string}'
+                        alt_name = f'{transition}_alt_{number_string}'
                         ScenarioHandler.try_alternative_actions(instance, action, precondition_string, alt_name)
                         EFLINTCommunicator.trigger_transition(instance, alt_name, action["Actor"], action["Recipient"])
                         result = EFLINTCommunicator.\
@@ -141,7 +154,7 @@ class ScenarioHandler:
                             print(f"Precondition term(s) originally causing a violation: {difference}\n")
                             for violating_precondition in difference:
                                 ScenarioHandler.explain_precondition_violation(violating_precondition)
-                            return f"\nValid Precondition: {precondition}"
+                            return f"\nValid Precondition: {precondition_string}"
                     return f"None of the permuted pre-conditions helped in enabling {transition}."
 
                 else:
@@ -173,12 +186,47 @@ class ScenarioHandler:
 
         return selected_options
 
+    # TODO: Move to scenario_handler.py
+    @staticmethod
+    def topological_sort(dependency_graph):
+        # Perform topological sorting to generate valid scenarios
+        scenarios = []
+
+        # Find all nodes without incoming edges (sources)
+        sources = [node for node in dependency_graph.nodes if dependency_graph.in_degree(node) == 0]
+
+        # Generate scenarios starting from each source node
+        for source in sources:
+            stack = [(source, [source])]
+            action_stack = []
+
+            while stack:
+                action_path = []
+                if action_stack:
+                    init_act, action_path = action_stack.pop()
+                node, path = stack.pop()
+
+                successors = list(dependency_graph.successors(node))
+
+                if successors:
+                    for successor in successors:
+                        action = DAGBuilder.get_action_from_edge(dependency_graph, node, successor)
+
+                        new_action_path = action_path + [action]
+                        new_path = path + [successor]
+                        action_stack.append((action, new_action_path))
+                        stack.append((successor, new_path))
+                else:
+                    scenarios.append(action_path)
+
+        return scenarios
+
     @staticmethod
     def try_alternative_actions(instance, action, permuted_precondition, alt_name):
         temp_action = action.copy()
         temp_action["Act"][0] = alt_name
         temp_action["Conditioned by"] = [permuted_precondition]
-        executable_action = ' '.join(f'{key} {" ".join(values)}' for key, values in temp_action.items() if values)
+        executable_action = ' '.join(f'{key} {",".join(values)}' for key, values in temp_action.items() if values)
 
         return EFLINTCommunicator.eflint_server_request(instance, executable_action)
 

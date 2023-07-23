@@ -60,7 +60,7 @@ class ActionParser:
         with open(file_path, 'r') as file:
             content = file.read()
 
-        pattern = r'(?m)^(?!Extend)(Act [\w\W]*?\.)'
+        pattern = r'(?m)^(?!Extend)(Act [\w\W]*?\.\n)'
         acts = re.findall(pattern, content, re.DOTALL)
 
         return acts
@@ -95,8 +95,7 @@ class ActionParser:
 
         return result
 
-    def retrieve_action_list(self):
-        template_path = './policies/policies.eflint'  # Replace with the actual file path
+    def retrieve_action_list(self, template_path):
         parsed_acts = self.parse_file(template_path)
         action_list = []
 
@@ -111,8 +110,6 @@ class ActionParser:
     def rpn_to_infix(rpn_expression):
         stack = []
         operators = {'Not', '&&', '||', '==', '!=', '<', '>', '<=', '>='}
-
-        # rpn_expression = self.single_bracketed_token(rpn_expression)
 
         for token in rpn_expression:
             if token in operators:
@@ -133,7 +130,7 @@ class ActionParser:
     # Shunting Yard implementation
     @staticmethod
     def infix_to_rpn(expression):
-        precedence = {'Not': 3, '&&': 2, '||': 1}
+        boolean_operators = {'Not': 3, '&&': 2, '||': 1}
         equality_operators = ['==', '!=', '<', '>', '<=', '>=']
         output = []
         operators = []
@@ -141,8 +138,8 @@ class ActionParser:
 
         for i in range(len(tokens)):
             token = tokens[i]
-            if token in precedence:
-                while operators and operators[-1] != '(' and precedence[token] <= precedence.get(operators[-1], 0):
+            if token in boolean_operators:
+                while operators and operators[-1] != '(' and boolean_operators[token] <= boolean_operators.get(operators[-1], 0):
                     output.append(operators.pop())
                 operators.append(token)
             elif token == '(':
@@ -152,7 +149,6 @@ class ActionParser:
                     output.append(operators.pop())
                 operators.pop()  # Discard the '('#
             elif token in equality_operators:
-                # operators.append('(')
                 output.append(token)
             else:
                 if (i + 1) < len(tokens) and tokens[i + 1] in equality_operators:
