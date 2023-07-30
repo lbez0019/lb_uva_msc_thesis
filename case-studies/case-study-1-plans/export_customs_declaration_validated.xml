@@ -10,7 +10,7 @@
 		<cac:PostalAddress>
 			<cbc:PostalZone>4874</cbc:PostalZone>
 			<cac:Country>
-				<cbc:IdentificationCode>DK</cbc:IdentificationCode>
+				<cbc:IdentificationCode>GB</cbc:IdentificationCode>
 			</cac:Country>
 		</cac:PostalAddress>
 		<cac:PartyLegalEntity>
@@ -34,7 +34,7 @@
 			<cac:PostalAddress>
 				<cbc:PostalZone>4874</cbc:PostalZone>
 				<cac:Country>
-					<cbc:IdentificationCode>DK</cbc:IdentificationCode>
+					<cbc:IdentificationCode>GB</cbc:IdentificationCode>
 				</cac:Country>
 			</cac:PostalAddress>
 			<cac:PartyLegalEntity>
@@ -64,7 +64,7 @@
 			<cac:PostalAddress>
 				<cbc:PostalZone>4840</cbc:PostalZone>
 				<cac:Country>
-					<cbc:IdentificationCode>DK</cbc:IdentificationCode>
+					<cbc:IdentificationCode>GB</cbc:IdentificationCode>
 				</cac:Country>
 			</cac:PostalAddress>
 		</cac:CustomsParty>
@@ -81,7 +81,7 @@
 			<cac:PostalAddress>
 				<cbc:PostalZone>4840</cbc:PostalZone>
 				<cac:Country>
-					<cbc:IdentificationCode>DK</cbc:IdentificationCode>
+					<cbc:IdentificationCode>GB</cbc:IdentificationCode>
 				</cac:Country>
 			</cac:PostalAddress>
 		</cac:SignatoryParty>

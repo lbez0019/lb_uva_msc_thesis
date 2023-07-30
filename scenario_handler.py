@@ -186,7 +186,6 @@ class ScenarioHandler:
 
         return selected_options
 
-    # TODO: Move to scenario_handler.py
     @staticmethod
     def topological_sort(dependency_graph):
         # Perform topological sorting to generate valid scenarios

@@ -23,7 +23,6 @@ class DAGBuilder:
 
         return graph
 
-
     @staticmethod
     def display_valid_scenario(graph, scenario):
         # TODO: ADD EDGE COLOURS
